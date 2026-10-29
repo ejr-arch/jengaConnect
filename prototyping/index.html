@@ -1,1251 +1,461 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>JengaConnect — clickable low-fidelity prototype</title>
-<style>
-  /* ============================================================
-     JengaConnect clickable wireframe
-     Edit copy directly in the HTML screens below.
-     Sample listing data lives near the bottom in LISTINGS.
-     ============================================================ */
-  :root{
-    --ink:#222;
-    --text:#3b3b3b;
-    --muted:#696969;
-    --line:#4a4a4a;
-    --line-mid:#969696;
-    --line-light:#d1d1d1;
-    --fill:#e4e4e4;
-    --fill-soft:#f5f5f5;
-    --page:#ededed;
-    --primary:#333;
-  }
-  *{box-sizing:border-box;}
-  html,body{margin:0;min-height:100%;}
-  body{
-    background:var(--page);
-    color:var(--ink);
-    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
-    font-size:14px;
-    line-height:1.4;
-    -webkit-font-smoothing:antialiased;
-  }
-  button,input,select,textarea{font:inherit;color:inherit;}
-  button{cursor:pointer;}
-  [hidden]{display:none !important;}
-  :focus-visible{outline:2px solid var(--ink);outline-offset:2px;}
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>JengaConnect clickable wireframe</title>
+	<style>
+		/* Same look as the JengaConnect wireframes. Every button simply moves to the next step. */
+		* {
+			box-sizing: border-box
+		}
 
-  /* ---------- page around the phone ---------- */
-  .page{
-    min-height:100svh;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    justify-content:center;
-    gap:12px;
-    padding:18px 16px 28px;
-  }
-  .topbar{
-    width:390px;
-    max-width:100%;
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap:12px;
-  }
-  .topbar-label{
-    font-size:10px;
-    font-weight:800;
-    letter-spacing:.12em;
-    text-transform:uppercase;
-    color:#555;
-  }
-  .restart{
-    border:0;
-    background:none;
-    padding:3px 0;
-    color:var(--ink);
-    font-size:12px;
-    text-decoration:underline;
-    text-underline-offset:3px;
-  }
-  .phone{
-    width:390px;
-    height:min(844px, calc(100svh - 136px));
-    min-height:560px;
-    flex:0 0 auto;
-    padding:8px;
-    border:2px solid #2e2e2e;
-    border-radius:34px;
-    background:#fff;
-  }
-  .app{
-    position:relative;
-    height:100%;
-    display:flex;
-    flex-direction:column;
-    overflow:hidden;
-    border:1px solid #a4a4a4;
-    border-radius:26px;
-    background:#fff;
-  }
-  .legend{
-    width:390px;
-    max-width:100%;
-    display:flex;
-    flex-wrap:wrap;
-    justify-content:center;
-    gap:7px 13px;
-    color:#5d5d5d;
-    font-size:10px;
-  }
-  .legend span{display:inline-flex;align-items:center;gap:5px;}
-  .legend .feature{width:16px;height:16px;font-size:9px;}
+		body {
+			margin: 0;
+			background: #fff;
+			color: #222;
+			font-family: Arial, Helvetica, sans-serif
+		}
 
-  /* ---------- screens and headers ---------- */
-  .screens{position:relative;flex:1;min-height:0;}
-  .screen{
-    position:absolute;
-    inset:0;
-    display:none;
-    flex-direction:column;
-    background:#fff;
-  }
-  .screen.active{display:flex;}
-  .screen-header{
-    flex:0 0 auto;
-    min-height:58px;
-    display:flex;
-    align-items:center;
-    gap:8px;
-    padding:11px 16px;
-    border-bottom:1px solid var(--line-light);
-    background:#fff;
-  }
-  .screen-header.home{
-    min-height:74px;
-    flex-direction:column;
-    align-items:flex-start;
-    justify-content:center;
-    gap:2px;
-  }
-  .brand{font-size:22px;font-weight:800;letter-spacing:-.035em;line-height:1.1;}
-  .brand-sub{
-    color:var(--muted);
-    font-size:9px;
-    font-weight:700;
-    letter-spacing:.09em;
-    text-transform:uppercase;
-  }
-  .back{
-    flex:none;
-    border:0;
-    background:none;
-    padding:5px 0;
-    color:var(--ink);
-    font-size:11px;
-    font-weight:700;
-    text-decoration:underline;
-    text-underline-offset:3px;
-  }
-  .header-title{flex:1;text-align:center;font-size:14px;font-weight:800;}
-  .header-title.left{text-align:left;}
-  .header-spacer{width:54px;flex:none;}
-  .screen-body{
-    flex:1;
-    min-height:0;
-    overflow-y:auto;
-    overscroll-behavior:contain;
-    padding:16px;
-    background:#fff;
-    scrollbar-width:thin;
-  }
+		button,
+		input,
+		select,
+		textarea {
+			font: inherit;
+			color: inherit
+		}
 
-  /* ---------- bottom navigation ---------- */
-  .bottom-nav{
-    flex:0 0 auto;
-    display:grid;
-    grid-template-columns:repeat(3,1fr);
-    height:60px;
-    border-top:1px solid #606060;
-    background:#fff;
-    z-index:5;
-  }
-  .bottom-nav button{
-    position:relative;
-    border:0;
-    border-right:1px solid var(--line-light);
-    background:#fff;
-    color:#565656;
-    padding:8px 4px;
-    font-size:11px;
-    font-weight:600;
-    letter-spacing:.02em;
-  }
-  .bottom-nav button:last-child{border-right:0;}
-  .bottom-nav button.active{background:#ededed;color:#111;font-weight:800;}
-  .bottom-nav button.active::before{
-    content:"";
-    position:absolute;
-    top:0;left:0;right:0;
-    height:3px;
-    background:var(--ink);
-  }
+		button {
+			cursor: pointer
+		}
 
-  /* ---------- shared type, buttons and fields ---------- */
-  h1,h2,h3,p{margin-top:0;}
-  .h2{
-    display:flex;
-    align-items:center;
-    gap:7px;
-    margin:0 0 12px;
-    font-size:18px;
-    line-height:1.2;
-    letter-spacing:-.02em;
-  }
-  .h3{
-    display:flex;
-    align-items:center;
-    gap:6px;
-    margin:18px 0 8px;
-    color:#505050;
-    font-size:10px;
-    font-weight:800;
-    letter-spacing:.09em;
-    text-transform:uppercase;
-  }
-  .muted{color:var(--muted);}
-  .small{font-size:11px;line-height:1.5;color:var(--muted);}
-  .feature{
-    flex:none;
-    display:inline-flex;
-    align-items:center;
-    justify-content:center;
-    width:20px;
-    height:20px;
-    border-radius:50%;
-    background:var(--primary);
-    color:#fff;
-    font-size:10px;
-    font-weight:800;
-    line-height:1;
-  }
-  .btn{
-    width:100%;
-    min-height:46px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    gap:6px;
-    padding:11px 14px;
-    border:1px solid var(--line);
-    border-radius:6px;
-    background:#fff;
-    color:var(--ink);
-    font-size:13px;
-    font-weight:700;
-    text-align:center;
-  }
-  .btn.primary{background:var(--primary);border-color:var(--primary);color:#fff;}
-  .btn:active:not(:disabled){background:#e7e7e7;}
-  .btn.primary:active:not(:disabled){background:#111;}
-  .btn:disabled{background:#f0f0f0;border-color:#c9c9c9;color:#9b9b9b;cursor:not-allowed;}
-  .btn + .btn{margin-top:8px;}
-  .text-btn{
-    border:0;
-    background:none;
-    padding:0;
-    color:var(--ink);
-    font-size:11px;
-    font-weight:700;
-    text-decoration:underline;
-    text-underline-offset:3px;
-  }
-  .field{margin:0 0 12px;}
-  .field label,.field-label{
-    display:block;
-    margin-bottom:5px;
-    color:#5c5c5c;
-    font-size:9px;
-    font-weight:800;
-    letter-spacing:.09em;
-    text-transform:uppercase;
-  }
-  input,select,textarea{
-    width:100%;
-    border:1px solid #999;
-    border-radius:6px;
-    background:#fafafa;
-    color:var(--ink);
-    padding:10px;
-    font-size:16px;
-  }
-  textarea{min-height:104px;resize:vertical;line-height:1.45;}
-  input::placeholder,textarea::placeholder{color:#8b8b8b;}
-  .row-2{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
-  .note{
-    margin:12px 0;
-    padding:10px 12px;
-    border:1px solid var(--line-light);
-    border-radius:6px;
-    background:var(--fill-soft);
-    color:#5d5d5d;
-    font-size:11px;
-    line-height:1.45;
-  }
+		.page {
+			min-height: 100vh;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			padding: 14px
+		}
 
-  /* ---------- browse ---------- */
-  .search-row{margin-bottom:10px;}
-  .filters{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px;}
-  .filters .field{margin:0;}
-  .filters input,.filters select{padding:9px 8px;font-size:14px;}
-  .results-head{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap:8px;
-    margin:0 0 9px;
-    color:#555;
-    font-size:10px;
-    font-weight:800;
-    letter-spacing:.06em;
-    text-transform:uppercase;
-  }
-  .listing-card{
-    width:100%;
-    display:flex;
-    align-items:stretch;
-    gap:10px;
-    margin:0 0 10px;
-    padding:9px;
-    border:1px solid #969696;
-    border-radius:8px;
-    background:#fff;
-    color:var(--ink);
-    text-align:left;
-  }
-  .listing-card:active{background:#efefef;}
-  .photo{
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    border:1px solid #b1b1b1;
-    border-radius:5px;
-    background:var(--fill);
-    color:#666;
-    font-size:10px;
-    letter-spacing:.08em;
-    text-transform:lowercase;
-  }
-  .card-photo{width:86px;min-height:86px;flex:none;}
-  .card-copy{min-width:0;flex:1;display:flex;flex-direction:column;justify-content:center;}
-  .card-row{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;}
-  .card-name{font-size:14px;font-weight:800;}
-  .card-price{font-size:12px;font-weight:700;white-space:nowrap;}
-  .card-meta{margin-top:3px;color:#5e5e5e;font-size:10.5px;line-height:1.3;}
-  .card-link{margin-top:6px;font-size:10px;font-weight:800;text-decoration:underline;text-underline-offset:2px;}
-  .empty{
-    margin:0 0 12px;
-    padding:28px 16px;
-    border:1px dashed #999;
-    border-radius:8px;
-    background:#fafafa;
-    text-align:center;
-  }
-  .empty h3{margin:0 0 6px;font-size:15px;}
-  .empty p{margin:0 0 14px;color:var(--muted);font-size:11.5px;line-height:1.5;}
+		.phone {
+			width: 372px;
+			max-width: 100%;
+			height: min(760px, calc(100vh - 28px));
+			min-height: 600px;
+			border: 3px solid #555;
+			border-radius: 30px;
+			background: #fff;
+			padding: 16px 15px;
+			position: relative;
+			overflow: hidden
+		}
 
-  /* ---------- listing detail ---------- */
-  .hero-photo{height:160px;margin-bottom:14px;}
-  .title-line{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;}
-  .title-line h2{margin:0;font-size:20px;letter-spacing:-.02em;}
-  .title-line .price{font-size:13px;font-weight:800;white-space:nowrap;padding-top:3px;}
-  .details{margin:0;border-top:1px solid var(--line-light);}
-  .details div{
-    display:flex;
-    justify-content:space-between;
-    gap:14px;
-    padding:9px 0;
-    border-bottom:1px solid var(--line-light);
-    font-size:12px;
-  }
-  .details dt{color:var(--muted);}
-  .details dd{margin:0;text-align:right;font-weight:700;}
-  .actions{margin-top:14px;}
+		.screen {
+			height: 100%;
+			display: flex;
+			flex-direction: column;
+			overflow-y: auto
+		}
 
-  /* ---------- contact ---------- */
-  .summary{
-    display:flex;
-    align-items:center;
-    gap:10px;
-    margin:0 0 14px;
-    padding:10px;
-    border:1px solid var(--line-light);
-    border-radius:8px;
-    background:#fafafa;
-  }
-  .summary-photo{width:52px;height:52px;flex:none;}
-  .summary-name{font-size:13px;font-weight:800;}
-  .summary-meta{margin-top:2px;color:var(--muted);font-size:10.5px;}
-  .quick-row{display:flex;flex-wrap:wrap;gap:7px;margin:0 0 14px;}
-  .chip{
-    border:1px solid #8f8f8f;
-    border-radius:999px;
-    background:#fff;
-    padding:8px 10px;
-    color:#383838;
-    font-size:11px;
-  }
-  .chip:active{background:#e9e9e9;}
+		.bar {
+			flex: none;
+			height: 38px;
+			background: #d9d9d9;
+			border-radius: 5px;
+			display: flex;
+			align-items: center;
+			padding: 0 11px;
+			font-size: 15px;
+			font-weight: 700;
+			margin-bottom: 11px;
+			gap: 8px
+		}
 
-  /* ---------- collection ---------- */
-  .kv{
-    margin:0 0 14px;
-    overflow:hidden;
-    border:1px solid var(--line-light);
-    border-radius:8px;
-  }
-  .kv div{display:flex;justify-content:space-between;gap:12px;padding:10px 12px;border-bottom:1px solid var(--line-light);font-size:12px;}
-  .kv div:last-child{border-bottom:0;}
-  .kv span:first-child{color:var(--muted);}
-  .kv strong{text-align:right;}
-  .tracker{
-    position:relative;
-    display:grid;
-    grid-template-columns:repeat(4,1fr);
-    margin:8px 0 14px;
-    padding:0;
-    list-style:none;
-  }
-  .tracker::before{
-    content:"";
-    position:absolute;
-    top:9px;left:12%;right:12%;
-    height:2px;
-    background:#cecece;
-  }
-  .tracker li{
-    position:relative;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    gap:6px;
-    color:#8b8b8b;
-    font-size:9.5px;
-    text-align:center;
-  }
-  .tracker .dot{
-    position:relative;
-    z-index:1;
-    width:18px;height:18px;
-    border:1px solid #8d8d8d;
-    border-radius:50%;
-    background:#fff;
-  }
-  .tracker li.done{color:#444;}
-  .tracker li.done .dot{background:#666;border-color:#666;}
-  .tracker li.current{color:#111;font-weight:800;}
-  .tracker li.current .dot{background:var(--primary);border-color:var(--primary);outline:2px solid var(--primary);outline-offset:2px;}
+		.bar .t {
+			flex: 1
+		}
 
-  /* ---------- requests, account and complete ---------- */
-  .request-card{
-    margin:0 0 12px;
-    padding:14px;
-    border:1px solid #969696;
-    border-radius:8px;
-    background:#fff;
-  }
-  .request-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;}
-  .request-top h2{margin:0 0 3px;font-size:16px;}
-  .tag{
-    display:inline-block;
-    padding:3px 6px;
-    border:1px solid #929292;
-    border-radius:3px;
-    background:#efefef;
-    color:#3c3c3c;
-    font-size:9px;
-    font-weight:800;
-    letter-spacing:.05em;
-    text-transform:uppercase;
-    white-space:nowrap;
-  }
-  .request-line{padding:5px 0;border-bottom:1px solid #ededed;font-size:11px;color:#555;}
-  .request-line:last-of-type{border-bottom:0;margin-bottom:10px;}
-  .centre-state{
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    justify-content:center;
-    min-height:100%;
-    padding:28px 6px;
-    text-align:center;
-  }
-  .centre-state h2{margin:0 0 8px;font-size:20px;}
-  .centre-state p{max-width:260px;margin:0 0 18px;color:var(--muted);font-size:12px;line-height:1.55;}
-  .centre-state .btn{width:auto;min-width:180px;}
+		.bar button {
+			border: 0;
+			background: none;
+			font-weight: 700;
+			font-size: 15px;
+			padding: 0
+		}
 
-  /* ---------- report sheet and toast ---------- */
-  .modal{
-    position:absolute;
-    inset:0;
-    z-index:50;
-    display:flex;
-    align-items:flex-end;
-    padding:10px;
-    background:rgba(20,20,20,.38);
-  }
-  .sheet{
-    width:100%;
-    max-height:calc(100% - 20px);
-    overflow:auto;
-    padding:16px;
-    border:1px solid #555;
-    border-radius:14px;
-    background:#fff;
-  }
-  .sheet-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:4px;}
-  .sheet-head h2{margin:0;font-size:18px;letter-spacing:-.02em;}
-  .sheet-close{border:0;background:none;padding:2px 0;font-size:11px;font-weight:700;text-decoration:underline;text-underline-offset:3px;}
-  .sheet .note{margin:6px 0 12px;}
-  .sheet-actions{margin-top:12px;}
-  .error{margin:0 0 10px;color:#333;font-size:11px;font-weight:800;}
-  .toast{
-    position:absolute;
-    left:50%;
-    bottom:74px;
-    z-index:60;
-    max-width:82%;
-    transform:translateX(-50%);
-    padding:9px 13px;
-    border-radius:5px;
-    background:#303030;
-    color:#fff;
-    font-size:11.5px;
-    text-align:center;
-  }
+		.bar .exit {
+			font-size: 11px;
+			font-weight: 400;
+			color: #555;
+			text-decoration: underline
+		}
 
-  /* ---------- small screens ---------- */
-  @media (max-width:480px){
-    body{background:#fff;}
-    .page{gap:6px;padding:5px 0 0;}
-    .topbar{width:calc(100% - 20px);}
-    .phone{
-      width:100%;
-      max-width:390px;
-      height:calc(100svh - 46px);
-      min-height:580px;
-      padding:6px;
-      border-radius:24px 24px 18px 18px;
-    }
-    .app{border-radius:18px;}
-    .legend{display:none;}
-  }
-</style>
+		.fld {
+			border: 1.5px solid #888;
+			border-radius: 4px;
+			min-height: 36px;
+			margin: 7px 0;
+			padding: 0 10px;
+			font-size: 14px;
+			display: flex;
+			align-items: center;
+			color: #555;
+			background: #fafafa;
+			width: 100%
+		}
+
+		input.fld,
+		select.fld,
+		textarea.fld {
+			outline: 0
+		}
+
+		textarea.fld {
+			padding: 8px 10px;
+			min-height: 84px;
+			align-items: flex-start;
+			resize: none
+		}
+
+		.row2 {
+			display: flex;
+			gap: 8px
+		}
+
+		.row2>* {
+			flex: 1;
+			min-width: 0
+		}
+
+		.card {
+			border: 1.5px solid #888;
+			border-radius: 6px;
+			display: flex;
+			gap: 10px;
+			padding: 8px;
+			margin: 8px 0;
+			font-size: 14px;
+			line-height: 1.35;
+			background: #fff;
+			text-align: left;
+			width: 100%
+		}
+
+		.img {
+			width: 68px;
+			height: 68px;
+			background: #cfcfcf;
+			border: 1.5px solid #999;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			color: #777;
+			font-size: 12px;
+			flex: none
+		}
+
+		.bigimg {
+			width: 100%;
+			height: 130px;
+			background: #cfcfcf;
+			border: 1.5px solid #999;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			color: #777;
+			font-size: 14px;
+			margin-bottom: 10px;
+			gap: 6px
+		}
+
+		.btn {
+			width: 100%;
+			min-height: 42px;
+			background: #6b6b6b;
+			color: #fff;
+			border: 0;
+			border-radius: 6px;
+			font-size: 14px;
+			font-weight: 700;
+			margin: 9px 0 0
+		}
+
+		.btn.alt {
+			background: #fff;
+			color: #444;
+			border: 1.5px solid #6b6b6b
+		}
+
+		.kv {
+			font-size: 14px;
+			display: grid;
+			grid-template-columns: 104px 1fr;
+			gap: 7px 8px;
+			margin: 7px 0
+		}
+
+		.kv b {
+			color: #555
+		}
+
+		.chip {
+			display: inline-block;
+			border: 1.5px solid #888;
+			border-radius: 14px;
+			font-size: 12.5px;
+			padding: 5px 11px;
+			margin: 4px 4px 0 0;
+			background: #fff
+		}
+
+		.steps {
+			margin: 8px 0
+		}
+
+		.step {
+			display: flex;
+			align-items: center;
+			gap: 10px;
+			font-size: 14px;
+			margin: 9px 0
+		}
+
+		.dot {
+			width: 19px;
+			height: 19px;
+			border-radius: 50%;
+			border: 2px solid #666;
+			flex: none
+		}
+
+		.dot.on {
+			background: #666
+		}
+
+		.tag {
+			display: inline-flex;
+			width: 21px;
+			height: 21px;
+			border-radius: 50%;
+			background: #254F18;
+			color: #fff;
+			font-size: 12px;
+			font-weight: 700;
+			align-items: center;
+			justify-content: center;
+			flex: none
+		}
+
+		.small {
+			font-size: 12px;
+			color: #666;
+			margin: 6px 0;
+			display: flex;
+			align-items: center;
+			gap: 6px
+		}
+
+		.q {
+			border: 2px solid #254F18;
+			border-radius: 7px;
+			padding: 11px;
+			margin: 12px 0 0
+		}
+
+		.q p {
+			margin: 0 0 3px;
+			font-size: 14px;
+			font-weight: 700
+		}
+
+		.demo {
+			border: 1.5px dashed #888;
+			border-radius: 6px;
+			padding: 10px;
+			margin: 12px 0 0;
+			background: #fafafa
+		}
+
+		.status {
+			display: inline-block;
+			border: 1px solid #777;
+			border-radius: 3px;
+			background: #eee;
+			font-size: 11px;
+			font-weight: 700;
+			padding: 1px 6px
+		}
+
+		.logo {
+			width: 84px;
+			height: 84px;
+			border-radius: 50%;
+			background: #d4d4d4;
+			border: 1.5px solid #999;
+			color: #777;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			margin: 0 auto 14px;
+			font-size: 13px
+		}
+
+		.center {
+			text-align: center
+		}
+
+		.grow {
+			flex: 1
+		}
+	</style>
 </head>
+
 <body>
-<div class="page">
-
-  <!-- Restart sits outside the phone frame, as requested. -->
-  <div class="topbar">
-    <span class="topbar-label">JengaConnect · clickable wireframe</span>
-    <a class="restart" id="restart" href="#" role="button">Restart</a>
-  </div>
-
-  <div class="phone" aria-label="JengaConnect mobile prototype">
-    <div class="app">
-      <div class="screens">
-
-        <!-- =========================
-             SCREEN 1: BROWSE
-             ========================= -->
-        <section class="screen active" id="screen-browse">
-          <header class="screen-header home">
-            <div class="brand">JengaConnect</div>
-            <div class="brand-sub">Kampala &amp; Wakiso · surplus materials</div>
-          </header>
-
-          <div class="screen-body">
-            <h2 class="h2">Find materials <span class="feature" title="Key feature 1: search and filters">1</span></h2>
-
-            <div class="field search-row">
-              <label for="search">Search material</label>
-              <input id="search" type="search" placeholder="Search by name…" autocomplete="off">
-            </div>
-
-            <div class="filters">
-              <div class="field">
-                <label for="quantity">Quantity</label>
-                <input id="quantity" type="number" min="1" placeholder="___ units" inputmode="numeric">
-              </div>
-              <div class="field">
-                <label for="area">Area</label>
-                <select id="area">
-                  <option value="all">All areas</option>
-                  <option value="Kampala">Kampala</option>
-                  <option value="Wakiso">Wakiso</option>
-                </select>
-              </div>
-              <div class="field">
-                <label for="collection">Collection</label>
-                <select id="collection">
-                  <option value="pick-up">pick-up</option>
-                </select>
-              </div>
-            </div>
-
-            <div class="results-head">
-              <span id="resultCount">3 listings</span>
-              <button class="text-btn" id="clearFiltersTop" type="button" hidden>Clear filters</button>
-            </div>
-
-            <div id="listingResults" aria-live="polite"></div>
-
-            <div class="empty" id="emptyState" hidden>
-              <h3>No matching listings nearby</h3>
-              <p>Try a different material, quantity or area.</p>
-              <button class="btn primary js-clear" type="button">Clear filters</button>
-            </div>
-
-            <p class="small">Only the general area is shown. The exact site address is shared after the seller confirms.</p>
-          </div>
-
-          <nav class="bottom-nav" aria-label="Main navigation">
-            <button type="button" data-nav="browse" class="active">Browse</button>
-            <button type="button" data-nav="requests">Requests</button>
-            <button type="button" data-nav="account">Account</button>
-          </nav>
-        </section>
-
-        <!-- =========================
-             SCREEN 2: LISTING
-             ========================= -->
-        <section class="screen" id="screen-listing">
-          <header class="screen-header">
-            <button class="back" type="button" data-go="browse">Back</button>
-            <div class="header-title">Listing</div>
-            <div class="header-spacer"></div>
-          </header>
-
-          <div class="screen-body">
-            <div class="photo hero-photo">photo</div>
-
-            <div class="title-line">
-              <h2 id="detailName">Material A</h2>
-              <span class="price" id="detailPrice">UGX ___</span>
-            </div>
-
-            <h3 class="h3">Listing details <span class="feature" title="Key feature 2: structured listing">2</span></h3>
-
-            <dl class="details">
-              <div><dt>Material</dt><dd id="detailMaterial">Material A</dd></div>
-              <div><dt>Quantity</dt><dd id="detailQuantity">20 units</dd></div>
-              <div><dt>Condition</dt><dd id="detailCondition">Used</dd></div>
-              <div><dt>General area</dt><dd id="detailArea">Kampala</dd></div>
-              <div><dt>Asking price</dt><dd>UGX ___</dd></div>
-              <div><dt>Seller permission stated</dt><dd>Yes</dd></div>
-            </dl>
-
-            <div class="note">Exact site address is not shown.</div>
-
-            <div class="actions">
-              <button class="btn primary" id="askSeller" type="button">Ask the seller</button>
-              <button class="btn" id="reportListing" type="button">Report listing <span class="feature" title="Key feature 5: report to moderators">5</span></button>
-            </div>
-          </div>
-
-          <nav class="bottom-nav" aria-label="Main navigation">
-            <button type="button" data-nav="browse" class="active">Browse</button>
-            <button type="button" data-nav="requests">Requests</button>
-            <button type="button" data-nav="account">Account</button>
-          </nav>
-        </section>
-
-        <!-- =========================
-             SCREEN 3: CONTACT
-             ========================= -->
-        <section class="screen" id="screen-contact">
-          <header class="screen-header">
-            <button class="back" type="button" data-go="listing">Back</button>
-            <div class="header-title">Contact</div>
-            <div class="header-spacer"></div>
-          </header>
-
-          <div class="screen-body">
-            <h2 class="h2">Contact the seller <span class="feature" title="Key feature 3: seller contact and inspection">3</span></h2>
-
-            <div class="summary">
-              <div class="photo summary-photo">photo</div>
-              <div>
-                <div class="summary-name" id="contactItem">Material A</div>
-                <div class="summary-meta" id="contactMeta">20 units · Kampala</div>
-              </div>
-            </div>
-
-            <div class="field-label">Quick questions</div>
-            <div class="quick-row">
-              <button class="chip" type="button" data-question="Is this still available?">Still available?</button>
-              <button class="chip" type="button" data-question="Can I inspect the material before agreeing?">Can I inspect first?</button>
-              <button class="chip" type="button" data-question="Can I buy part of the quantity?">Part quantity?</button>
-              <button class="chip" type="button" data-question="What would collection cost?">Collection cost?</button>
-            </div>
-
-            <div class="field">
-              <label for="message">Message</label>
-              <textarea id="message" placeholder="Type a question…"></textarea>
-            </div>
-
-            <div class="field-label">Propose an inspection time</div>
-            <div class="row-2">
-              <div class="field">
-                <label for="inspectionDate">Date</label>
-                <select id="inspectionDate">
-                  <option value="">Select date</option>
-                  <option>Tomorrow</option>
-                  <option>This Saturday</option>
-                  <option>Next Saturday</option>
-                </select>
-              </div>
-              <div class="field">
-                <label for="inspectionTime">Time</label>
-                <select id="inspectionTime">
-                  <option value="">Select time</option>
-                  <option>Morning · 09:00–12:00</option>
-                  <option>Afternoon · 14:00–17:00</option>
-                </select>
-              </div>
-            </div>
-
-            <button class="btn primary" id="sendRequest" type="button">Send request</button>
-            <p class="small" style="margin-top:10px;">The seller must agree to the inspection before collection is confirmed.</p>
-          </div>
-
-          <nav class="bottom-nav" aria-label="Main navigation">
-            <button type="button" data-nav="browse" class="active">Browse</button>
-            <button type="button" data-nav="requests">Requests</button>
-            <button type="button" data-nav="account">Account</button>
-          </nav>
-        </section>
-
-        <!-- =========================
-             SCREEN 4: COLLECTION
-             ========================= -->
-        <section class="screen" id="screen-collection">
-          <header class="screen-header">
-            <button class="back" type="button" data-go="requests">Back</button>
-            <div class="header-title">Collection</div>
-            <div class="header-spacer"></div>
-          </header>
-
-          <div class="screen-body">
-            <div class="summary">
-              <div class="photo summary-photo">photo</div>
-              <div>
-                <div class="summary-name" id="collectionItem">Material A</div>
-                <div class="summary-meta" id="collectionMeta">20 units · Kampala</div>
-              </div>
-            </div>
-
-            <div class="kv">
-              <div><span>Agreed quantity</span><strong id="collectionQuantity">20 units</strong></div>
-              <div><span>Collection window</span><strong id="collectionWindow">___ (day) · ___:___–___:___</strong></div>
-              <div><span>Total cost</span><strong>UGX ___ + transport</strong></div>
-            </div>
-
-            <h3 class="h3">Collection status <span class="feature" title="Key feature 4: collection status">4</span></h3>
-            <ol class="tracker" id="tracker">
-              <li class="current"><span class="dot"></span><span>Contacted</span></li>
-              <li><span class="dot"></span><span>Inspected</span></li>
-              <li><span class="dot"></span><span>Agreed</span></li>
-              <li><span class="dot"></span><span>Collected</span></li>
-            </ol>
-
-            <button class="btn" id="nextStatus" type="button">Next status</button>
-            <button class="btn primary" id="markComplete" type="button" disabled>Mark complete</button>
-
-            <div style="text-align:center;margin-top:14px;">
-              <button class="text-btn" id="reportCollection" type="button">Problem? Report to moderators</button>
-            </div>
-
-            <p class="small" style="margin-top:12px;">Only mark complete when you have collected the material and checked the total cost.</p>
-          </div>
-
-          <nav class="bottom-nav" aria-label="Main navigation">
-            <button type="button" data-nav="browse">Browse</button>
-            <button type="button" data-nav="requests" class="active">Requests</button>
-            <button type="button" data-nav="account">Account</button>
-          </nav>
-        </section>
-
-        <!-- =========================
-             REQUESTS TAB
-             ========================= -->
-        <section class="screen" id="screen-requests">
-          <header class="screen-header">
-            <div class="header-title left">Requests</div>
-          </header>
-          <div class="screen-body" id="requestsBody"></div>
-          <nav class="bottom-nav" aria-label="Main navigation">
-            <button type="button" data-nav="browse">Browse</button>
-            <button type="button" data-nav="requests" class="active">Requests</button>
-            <button type="button" data-nav="account">Account</button>
-          </nav>
-        </section>
-
-        <!-- =========================
-             ACCOUNT TAB
-             ========================= -->
-        <section class="screen" id="screen-account">
-          <header class="screen-header">
-            <div class="header-title left">Account</div>
-          </header>
-          <div class="screen-body">
-            <div class="centre-state">
-              <h2>Account</h2>
-              <p>Not part of this prototype.</p>
-              <button class="btn primary" type="button" data-go="browse">Back to Browse</button>
-            </div>
-          </div>
-          <nav class="bottom-nav" aria-label="Main navigation">
-            <button type="button" data-nav="browse">Browse</button>
-            <button type="button" data-nav="requests">Requests</button>
-            <button type="button" data-nav="account" class="active">Account</button>
-          </nav>
-        </section>
-
-        <!-- =========================
-             SUCCESS STATE
-             ========================= -->
-        <section class="screen" id="screen-complete">
-          <header class="screen-header">
-            <div class="header-title left">Complete</div>
-          </header>
-          <div class="screen-body">
-            <div class="centre-state">
-              <h2>Exchange complete</h2>
-              <p id="completeMeta">You marked this collection as complete.</p>
-              <button class="btn primary" id="backToBrowse" type="button">Back to Browse</button>
-            </div>
-          </div>
-          <nav class="bottom-nav" aria-label="Main navigation">
-            <button type="button" data-nav="browse">Browse</button>
-            <button type="button" data-nav="requests" class="active">Requests</button>
-            <button type="button" data-nav="account">Account</button>
-          </nav>
-        </section>
-
-      </div><!-- /screens -->
-
-      <!-- Report form: a small bottom sheet, used from Listing and Collection. -->
-      <div class="modal" id="reportModal" hidden>
-        <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="reportTitle">
-          <div class="sheet-head">
-            <h2 id="reportTitle">Report listing</h2>
-            <button class="sheet-close" id="closeReport" type="button">Close</button>
-          </div>
-          <p class="note">Reports go to moderators. The seller is not told who reported.</p>
-
-          <div class="field">
-            <label for="reportReason">Reason</label>
-            <select id="reportReason">
-              <option value="">Choose a reason</option>
-              <option>Wrong material or quantity</option>
-              <option>Already sold or not available</option>
-              <option>Unsafe or misleading listing</option>
-              <option>Price or permission problem</option>
-              <option>Other</option>
-            </select>
-          </div>
-
-          <div class="field">
-            <label for="reportDetails">What happened?</label>
-            <textarea id="reportDetails" placeholder="Tell moderators what happened…"></textarea>
-          </div>
-
-          <p class="error" id="reportError" hidden>Please choose a reason.</p>
-          <div class="sheet-actions">
-            <button class="btn primary" id="submitReport" type="button">Submit report</button>
-            <button class="btn" id="cancelReport" type="button">Cancel</button>
-          </div>
-        </div>
-      </div>
-
-      <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
-    </div><!-- /app -->
-  </div><!-- /phone -->
-
-  <!-- Small legend for the five numbered callouts. -->
-  <div class="legend" aria-label="Key feature legend">
-    <span><i class="feature">1</i> Search &amp; filters</span>
-    <span><i class="feature">2</i> Structured listing</span>
-    <span><i class="feature">3</i> Contact &amp; inspection</span>
-    <span><i class="feature">4</i> Collection status</span>
-    <span><i class="feature">5</i> Report to moderators</span>
-  </div>
-</div><!-- /page -->
-
-<script>
-(function () {
-  "use strict";
-
-  // ---------- sample data: edit these three listings ----------
-  const LISTINGS = [
-    { id: "a", name: "Material A", qty: 20, condition: "Used",    area: "Kampala", price: "UGX ___", collection: "pick-up" },
-    { id: "b", name: "Material B", qty: 8,  condition: "New",     area: "Wakiso",  price: "UGX ___", collection: "pick-up" },
-    { id: "c", name: "Material C", qty: 12, condition: "Damaged", area: "Kampala", price: "UGX ___", collection: "pick-up" }
-  ];
-  const STATUS_STEPS = ["Contacted", "Inspected", "Agreed", "Collected"];
-
-  // ---------- app state ----------
-  const state = {
-    screen: "browse",
-    selectedId: LISTINGS[0].id,
-    requestListingId: null,
-    requestSent: false,
-    statusIndex: 0,
-    exchangeComplete: false,
-    inspectionDate: "",
-    inspectionTime: "",
-    message: "",
-    reportOrigin: "listing",
-    query: "",
-    minQty: "",
-    area: "all",
-    collection: "pick-up"
-  };
-
-  const $ = (selector) => document.querySelector(selector);
-  const $$ = (selector) => Array.from(document.querySelectorAll(selector));
-
-  function getListing(id) {
-    return LISTINGS.find((listing) => listing.id === id) || LISTINGS[0];
-  }
-  function selectedListing() {
-    return getListing(state.selectedId);
-  }
-  function requestListing() {
-    return getListing(state.requestListingId || state.selectedId);
-  }
-  function pluralListings(count) {
-    return count === 1 ? "1 listing" : count + " listings";
-  }
-  function collectionWindowText() {
-    if (!state.inspectionDate && !state.inspectionTime) {
-      return "___ (day) · ___:___–___:___";
-    }
-    return (state.inspectionDate || "___ (day)") + " · " + (state.inspectionTime || "___");
-  }
-
-  // ---------- show one screen at a time ----------
-  function showScreen(name) {
-    state.screen = name;
-
-    if (name === "listing") renderListing();
-    if (name === "contact") renderContact();
-    if (name === "collection") renderCollection();
-    if (name === "requests") renderRequests();
-    if (name === "complete") renderComplete();
-
-    $$(".screen").forEach((screen) => {
-      screen.classList.toggle("active", screen.id === "screen-" + name);
-    });
-
-    const navForScreen = {
-      browse: "browse",
-      listing: "browse",
-      contact: "browse",
-      collection: "requests",
-      requests: "requests",
-      account: "account",
-      complete: "requests"
-    };
-    $$(".bottom-nav button").forEach((button) => {
-      button.classList.toggle("active", button.dataset.nav === navForScreen[name]);
-    });
-
-    const activeScreen = $("#screen-" + name);
-    const body = activeScreen ? activeScreen.querySelector(".screen-body") : null;
-    if (body) body.scrollTop = 0;
-  }
-
-  // ---------- browse, search and filters ----------
-  function filteredListings() {
-    const query = state.query.trim().toLowerCase();
-    const minQty = Number(state.minQty) || 0;
-
-    return LISTINGS.filter((listing) => {
-      const matchesName = !query || listing.name.toLowerCase().includes(query);
-      const matchesQty = !minQty || listing.qty >= minQty;
-      const matchesArea = state.area === "all" || listing.area === state.area;
-      const matchesCollection = listing.collection === state.collection;
-      return matchesName && matchesQty && matchesArea && matchesCollection;
-    });
-  }
-
-  function hasActiveFilters() {
-    return Boolean(state.query || state.minQty || state.area !== "all");
-  }
-
-  function listingCardHTML(listing) {
-    return `
-      <button class="listing-card" type="button" data-id="${listing.id}">
-        <span class="photo card-photo">photo</span>
-        <span class="card-copy">
-          <span class="card-row">
-            <span class="card-name">${listing.name}</span>
-            <span class="card-price">${listing.price}</span>
-          </span>
-          <span class="card-meta">${listing.qty} units · Condition: ${listing.condition}</span>
-          <span class="card-meta">Area: ${listing.area} · ${listing.collection}</span>
-          <span class="card-link">View listing</span>
-        </span>
-      </button>`;
-  }
-
-  function renderListings() {
-    const results = filteredListings();
-    const resultsEl = $("#listingResults");
-
-    resultsEl.innerHTML = results.map(listingCardHTML).join("");
-    resultsEl.hidden = results.length === 0;
-    $("#emptyState").hidden = results.length !== 0;
-    $("#resultCount").textContent = pluralListings(results.length);
-    $("#clearFiltersTop").hidden = !hasActiveFilters();
-
-    resultsEl.querySelectorAll(".listing-card").forEach((card) => {
-      card.addEventListener("click", () => openListing(card.dataset.id));
-    });
-  }
-
-  function clearFilters() {
-    state.query = "";
-    state.minQty = "";
-    state.area = "all";
-    state.collection = "pick-up";
-    $("#search").value = "";
-    $("#quantity").value = "";
-    $("#area").value = "all";
-    $("#collection").value = "pick-up";
-    renderListings();
-  }
-
-  function openListing(id) {
-    state.selectedId = id;
-    state.inspectionDate = "";
-    state.inspectionTime = "";
-    state.message = "";
-    $("#message").value = "";
-    $("#inspectionDate").value = "";
-    $("#inspectionTime").value = "";
-    showScreen("listing");
-  }
-
-  // ---------- listing detail ----------
-  function renderListing() {
-    const listing = selectedListing();
-    $("#detailName").textContent = listing.name;
-    $("#detailMaterial").textContent = listing.name;
-    $("#detailQuantity").textContent = listing.qty + " units";
-    $("#detailCondition").textContent = listing.condition;
-    $("#detailArea").textContent = listing.area;
-  }
-
-  // ---------- contact and inspection proposal ----------
-  function renderContact() {
-    const listing = selectedListing();
-    $("#contactItem").textContent = listing.name;
-    $("#contactMeta").textContent = listing.qty + " units · " + listing.area;
-  }
-
-  function addQuestion(text) {
-    const box = $("#message");
-    if (!box.value.includes(text)) {
-      box.value = box.value.trim() ? box.value.trim() + "\n" + text : text;
-    }
-    box.focus();
-  }
-
-  // ---------- collection tracker ----------
-  function renderCollection() {
-    const listing = requestListing();
-    $("#collectionItem").textContent = listing.name;
-    $("#collectionMeta").textContent = listing.qty + " units · " + listing.area;
-    $("#collectionQuantity").textContent = listing.qty + " units";
-    $("#collectionWindow").textContent = collectionWindowText();
-    renderTracker();
-  }
-
-  function renderTracker() {
-    $$("#tracker li").forEach((step, index) => {
-      step.classList.toggle("done", index < state.statusIndex);
-      step.classList.toggle("current", index === state.statusIndex);
-    });
-    $("#nextStatus").disabled = state.statusIndex >= STATUS_STEPS.length - 1;
-    $("#markComplete").disabled = state.statusIndex !== STATUS_STEPS.length - 1;
-  }
-
-  function advanceStatus() {
-    if (state.statusIndex < STATUS_STEPS.length - 1) {
-      state.statusIndex += 1;
-      renderTracker();
-    }
-  }
-
-  // ---------- requests tab ----------
-  function renderRequests() {
-    const body = $("#requestsBody");
-
-    if (!state.requestSent) {
-      body.innerHTML = `
-        <div class="empty">
-          <h3>No requests yet</h3>
-          <p>Requests you send to sellers will appear here.</p>
-          <button class="btn primary" id="browseFromRequests" type="button">Browse materials</button>
-        </div>`;
-      $("#browseFromRequests").addEventListener("click", () => showScreen("browse"));
-      return;
-    }
-
-    const listing = requestListing();
-    const status = state.exchangeComplete ? "Complete" : STATUS_STEPS[state.statusIndex];
-    body.innerHTML = `
-      <div class="request-card">
-        <div class="request-top">
-          <div>
-            <h2>${listing.name}</h2>
-            <div class="small">${listing.qty} units · ${listing.area}</div>
-          </div>
-          <span class="tag">${status}</span>
-        </div>
-        <div class="request-line">Request sent to seller.</div>
-        <div class="request-line">Collection window: ${collectionWindowText()}</div>
-        <p class="small">${state.exchangeComplete
-          ? "Exchange marked complete."
-          : "Waiting for the seller to agree to the inspection."}</p>
-        ${state.exchangeComplete
-          ? '<button class="btn" id="browseFromRequests" type="button">Browse materials</button>'
-          : '<button class="btn primary" id="viewCollection" type="button">View collection</button>'}
-      </div>`;
-
-    const viewCollection = $("#viewCollection");
-    if (viewCollection) viewCollection.addEventListener("click", () => showScreen("collection"));
-    const browseButton = $("#browseFromRequests");
-    if (browseButton) browseButton.addEventListener("click", () => showScreen("browse"));
-  }
-
-  // ---------- complete state ----------
-  function renderComplete() {
-    const listing = requestListing();
-    $("#completeMeta").textContent = listing.name + " · " + listing.qty + " units. You marked this collection as complete.";
-  }
-
-  // ---------- report sheet ----------
-  function openReport(origin) {
-    state.reportOrigin = origin;
-    $("#reportReason").value = "";
-    $("#reportDetails").value = "";
-    $("#reportError").hidden = true;
-    $("#reportModal").hidden = false;
-    setTimeout(() => $("#reportReason").focus(), 30);
-  }
-  function closeReport() {
-    $("#reportModal").hidden = true;
-  }
-
-  // ---------- toast ----------
-  let toastTimer = null;
-  function showToast(text) {
-    const toast = $("#toast");
-    toast.textContent = text;
-    toast.hidden = false;
-    clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => { toast.hidden = true; }, 2200);
-  }
-
-  // ---------- event wiring ----------
-  $("#search").addEventListener("input", (event) => {
-    state.query = event.target.value;
-    renderListings();
-  });
-  $("#quantity").addEventListener("input", (event) => {
-    state.minQty = event.target.value;
-    renderListings();
-  });
-  $("#area").addEventListener("change", (event) => {
-    state.area = event.target.value;
-    renderListings();
-  });
-  $("#collection").addEventListener("change", (event) => {
-    state.collection = event.target.value;
-    renderListings();
-  });
-
-  $("#clearFiltersTop").addEventListener("click", clearFilters);
-  $$(".js-clear").forEach((button) => button.addEventListener("click", clearFilters));
-
-  $("#askSeller").addEventListener("click", () => showScreen("contact"));
-  $$(".chip").forEach((chip) => {
-    chip.addEventListener("click", () => addQuestion(chip.dataset.question));
-  });
-
-  $("#sendRequest").addEventListener("click", () => {
-    state.inspectionDate = $("#inspectionDate").value;
-    state.inspectionTime = $("#inspectionTime").value;
-    state.message = $("#message").value.trim();
-    state.requestSent = true;
-    state.requestListingId = state.selectedId;
-    state.statusIndex = 0;
-    state.exchangeComplete = false;
-    showScreen("collection");
-    showToast("Request sent");
-  });
-
-  $("#nextStatus").addEventListener("click", advanceStatus);
-  $("#markComplete").addEventListener("click", () => {
-    if (state.statusIndex !== STATUS_STEPS.length - 1) return;
-    state.exchangeComplete = true;
-    showScreen("complete");
-  });
-  $("#backToBrowse").addEventListener("click", () => showScreen("browse"));
-
-  $("#reportListing").addEventListener("click", () => openReport("listing"));
-  $("#reportCollection").addEventListener("click", () => openReport("collection"));
-  $("#closeReport").addEventListener("click", closeReport);
-  $("#cancelReport").addEventListener("click", closeReport);
-  $("#submitReport").addEventListener("click", () => {
-    if (!$("#reportReason").value) {
-      $("#reportError").hidden = false;
-      $("#reportReason").focus();
-      return;
-    }
-    closeReport();
-    showScreen(state.reportOrigin);
-    showToast("Report sent to moderators");
-  });
-
-  // Back buttons and text links that use data-go.
-  document.addEventListener("click", (event) => {
-    const go = event.target.closest("[data-go]");
-    if (go) showScreen(go.dataset.go);
-  });
-
-  // Bottom navigation.
-  $$(".bottom-nav button").forEach((button) => {
-    button.addEventListener("click", () => showScreen(button.dataset.nav));
-  });
-
-  // Restart clears all prototype state.
-  $("#restart").addEventListener("click", (event) => {
-    event.preventDefault();
-    window.location.reload();
-  });
-
-  // ---------- start ----------
-  renderListings();
-  showScreen("browse");
-})();
-</script>
+	<div class="page">
+		<div class="phone">
+			<div class="screen" id="screen"></div>
+		</div>
+	</div>
+
+	<script>
+		(function () {
+			"use strict";
+			const tag = n => `<span class="tag">${n}</span>`;
+			const exit = `<button class="exit" data-go="login">Exit</button>`;
+			const bar = (title, back = true) => `<div class="bar">${back ? `<button data-back>‹ Back</button>` : ""}<span class="t">${title}</span>${exit}</div>`;
+			const listingCard = n => `<button class="card" data-go="b-listing"><span class="img">photo</span><span><b>Material ${n} · qty</b><br>Condition: ___<br>Area · UGX ___</span></button>`;
+			const steps = on => `<div class="steps">${["Contacted", "Inspected", "Agreed", "Collected"].map((s, i) => `<div class="step"><span class="dot ${i < on ? "on" : ""}"></span>${s}</div>`).join("")}</div>`;
+			const sellerCard = status => `<div class="card" style="cursor:default"><span class="img">photo</span><span><b>Material · qty</b><br>Status: <span class="status">${status}</span></span></div>`;
+
+			// every screen below; every button moves to the next step, whatever has been typed
+			const SCREENS = {
+				login: () => `<div class="grow"></div><div class="center"><div class="logo">logo</div><h2 style="margin:0 0 4px;font-size:26px">JengaConnect</h2><p class="small" style="justify-content:center">Log in to continue</p></div>
+ <button class="btn" data-go="b-browse" style="min-height:48px;font-size:15px;margin-top:22px">Log in as Buyer</button>
+ <button class="btn alt" data-go="s-create" style="min-height:48px;font-size:15px">Log in as Seller</button><div class="grow"></div>`,
+
+				// ----- BUYER -----
+				"b-browse": () => `${bar("JengaConnect", false)}
+ <div class="fld">${tag(1)}&nbsp;&nbsp;Material (e.g. bricks, cement)</div>
+ <div class="row2"><div class="fld">Quantity</div><div class="fld">Area ▾</div></div>
+ <div class="fld">Collection: pick-up ▾</div>
+ ${listingCard("A")}${listingCard("B")}${listingCard("C")}`,
+
+				"b-listing": () => `${bar("Listing")}
+ <div class="bigimg">${tag(2)}photos (swipe)</div>
+ <div class="kv"><b>Material</b><span>_______</span><b>Quantity</b><span>___ units</span><b>Condition</b><span>new / used / damaged</span><b>Area</b><span>general only</span><b>Asking</b><span>UGX ___</span><b>Seller</b><span>permission stated</span></div>
+ <div class="small">Exact site address is not shown.</div>
+ <button class="btn" data-go="b-contact">Ask the seller</button>
+ <button class="btn alt" data-go="report-listing">Report listing</button>`,
+
+				"report-listing": () => `${bar("Report listing")}
+ <div class="small">${tag(5)}Reports go to moderators</div>
+ <select class="fld"><option>Reason ▾</option><option>Wrong material or quantity</option><option>Unsafe or misleading</option><option>Other</option></select>
+ <textarea class="fld" placeholder="What happened?"></textarea>
+ <button class="btn" data-go="b-browse">Submit report</button>`,
+
+				"b-contact": () => `${bar("Contact seller")}
+ <div class="small">${tag(3)}Quick questions</div>
+ <div><span class="chip">Still available?</span><span class="chip">Can I inspect first?</span><span class="chip">Part quantity?</span><span class="chip">Collection cost?</span></div>
+ <textarea class="fld" placeholder="Type a question…" style="margin-top:12px"></textarea>
+ <div class="small" style="margin-top:8px">Inspection arrangement</div>
+ <div class="row2"><select class="fld"><option>Date ▾</option><option>Tomorrow</option><option>This Saturday</option></select><select class="fld"><option>Time ▾</option><option>Morning</option><option>Afternoon</option></select></div>
+ <button class="btn" data-go="b-waiting">Send request</button>`,
+
+				"b-waiting": () => `${bar("Request sent")}
+ <div class="center" style="padding:30px 0 14px"><div class="logo" style="width:64px;height:64px;font-size:11px">sent</div><b>Waiting for the seller to reply</b><div class="small" style="justify-content:center">Material · qty</div></div>
+ <div class="demo"><div class="small" style="margin:0 0 4px"><b>Seller side (demo)</b></div><div class="small" style="margin:0">Seller replies and agrees to the inspection.</div>
+ <button class="btn" data-go="b-inspect">Seller agrees to inspection</button></div>`,
+
+				"b-inspect": () => `${bar("Inspection")}
+ <div class="kv"><b>Seller</b><span>agreed</span><b>Inspection</b><span>day · time</span><b>Material</b><span>_______</span></div>
+ <div class="small">Buyer inspects the material at the agreed time.</div>
+ <div class="q"><p>Does the inspection confirm the listing?</p>
+  <button class="btn" data-go="b-collection">Yes</button>
+  <button class="btn alt" data-go="report-inspect">No · report to moderators</button></div>`,
+
+				"report-inspect": () => `${bar("Report to moderators")}
+ <div class="small">${tag(5)}Listing did not match the inspection</div>
+ <select class="fld"><option>Reason ▾</option><option>Wrong material or quantity</option><option>Condition worse than listed</option><option>Other</option></select>
+ <textarea class="fld" placeholder="What happened?"></textarea>
+ <button class="btn" data-go="b-browse">Submit report · back to Browse</button>`,
+
+				"b-collection": () => `${bar("Collection")}
+ <div class="kv"><b>Agreed qty</b><span>___ units</span><b>Window</b><span>day · time</span><b>Total cost</b><span>UGX ___ + transport</span></div>
+ <div class="small">${tag(4)}Status</div>${steps(2)}
+ <div class="q"><p>Is the total cost still worthwhile?</p>
+  <button class="btn" data-go="b-agreed">Yes · agree</button>
+  <button class="btn alt" data-go="b-browse">No · cancel</button></div>
+ <div class="small" style="margin-top:12px">${tag(5)}<button data-go="report-inspect" style="border:0;background:none;padding:0;font-size:12px;color:#666;text-decoration:underline">Problem? Report to moderators</button></div>`,
+
+				"b-agreed": () => `${bar("Collection")}
+ <div class="kv"><b>Agreed qty</b><span>___ units</span><b>Window</b><span>day · time</span><b>Total cost</b><span>UGX ___ + transport</span></div>
+ <div class="small">${tag(4)}Status</div>${steps(3)}
+ <button class="btn" data-go="b-done">Collect material · mark complete</button>`,
+
+				"b-done": () => `<div class="grow"></div><div class="center"><div class="logo">done</div><h2 style="margin:0 0 6px">Exchange complete</h2>
+ <div class="small" style="justify-content:center">The seller confirms collection</div>${steps(4)}</div>
+ <button class="btn" data-go="login">Back to start</button><div class="grow"></div>`,
+
+				// ----- SELLER -----
+				"s-create": () => `${bar("New listing", false)}
+ <div class="fld">${tag(1)}&nbsp;&nbsp;Material</div>
+ <div class="row2"><input class="fld" placeholder="Quantity"><select class="fld"><option>Unit ▾</option><option>units</option><option>bags</option></select></div>
+ <select class="fld"><option>Condition: new / used / damaged ▾</option><option>New</option><option>Used</option><option>Damaged</option></select>
+ <select class="fld"><option>General area ▾</option><option>Kampala</option><option>Wakiso</option></select>
+ <input class="fld" placeholder="Asking price: UGX ___">
+ <div class="row2" style="margin-top:7px"><div class="img" style="width:auto;height:50px">+ photo</div><div class="img" style="width:auto;height:50px">+ photo</div></div>
+ <label class="small" style="margin:10px 0 0"><input type="checkbox" style="width:auto"> I have permission to sell this material</label>
+ <button class="btn" data-go="s-listings">Submit for review</button>`,
+
+				"s-listings": () => `${bar("My listings")}
+ ${sellerCard("Pending review")}
+ <div class="demo"><div class="small" style="margin:0 0 2px"><b>Moderator check (demo)</b></div><div class="small" style="margin:0">${tag(2)}Listings are checked before they appear</div>
+  <button class="btn" data-go="s-published">Passed · publish</button></div>`,
+
+				"s-published": () => `${bar("My listings")}
+ ${sellerCard("Published")}
+ <div class="small">Listing is now visible to buyers.</div>
+ <div class="demo"><div class="small" style="margin:0"><b>A buyer sends a request (demo)</b></div>
+  <button class="btn" data-go="s-request">View buyer request</button></div>`,
+
+				"s-request": () => `${bar("Buyer request")}
+ <div class="small">${tag(3)}Buyer question</div>
+ <div class="fld" style="min-height:50px;align-items:flex-start;padding-top:8px">“Can I inspect first?”</div>
+ <div class="kv"><b>Proposed</b><span>date · time</span><b>Quantity</b><span>___ units</span></div>
+ <button class="btn" data-go="s-reserved">Accept</button>
+ <button class="btn alt" data-go="s-reserved">Suggest another time</button>`,
+
+				"s-reserved": () => `${bar("Reserved")}
+ ${sellerCard("Reserved")}
+ <div class="small" style="margin-top:10px">Buyer inspects and collects the material.</div>
+ <div class="small">${tag(4)}After inspection</div>
+ <button class="btn" data-go="s-done">Confirm collection</button>`,
+
+				"s-done": () => `<div class="grow"></div><div class="center"><div class="logo">done</div><h2 style="margin:0 0 6px">Listing collected</h2>
+ <div class="small" style="justify-content:center">Exchange finished</div></div>
+ ${sellerCard("Collected")}
+ <button class="btn" data-go="login">Back to start</button><div class="grow"></div>`
+			};
+
+			// ---------- navigation ----------
+			let current = "login", stack = [];
+			function show(id, push) {
+				if (push) stack.push(current);
+				if (id === "login") stack = [];
+				current = id;
+				const el = document.getElementById("screen");
+				el.innerHTML = SCREENS[id]();
+				el.scrollTop = 0;
+			}
+			document.addEventListener("click", e => {
+				const go = e.target.closest("[data-go]");
+				if (go) {show(go.dataset.go, true); return }
+				if (e.target.closest("[data-back]")) show(stack.pop() || "login", false);
+			});
+			show("login", false);
+		})();
+	</script>
 </body>
+
 </html>

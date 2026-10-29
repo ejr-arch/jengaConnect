@@ -1,263 +1,468 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>JengaConnect clickable wireframe</title>
-<style>
-/* Greyscale wireframe look. Edit text in the render functions in the script below. */
-:root{--ink:#222;--muted:#6a6a6a;--line:#4a4a4a;--soft:#f3f3f3;--fill:#dcdcdc}
-*{box-sizing:border-box}
-body{margin:0;background:#ececec;color:var(--ink);font:14px/1.4 Arial,Helvetica,sans-serif}
-button,input,select,textarea{font:inherit;color:inherit}
-button{cursor:pointer}
-[hidden]{display:none!important}
-.page{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:14px 12px}
-.phone{width:390px;max-width:100%;height:min(780px,calc(100vh - 28px));min-height:560px;border:3px solid #555;border-radius:30px;background:#fff;padding:10px;position:relative}
-.app{height:100%;display:flex;flex-direction:column;overflow:hidden;border-radius:20px;position:relative}
-.bar{flex:none;display:flex;align-items:center;gap:8px;min-height:44px;padding:8px 12px;background:var(--fill);font-weight:700;font-size:13px}
-.bar .t{flex:1}
-.bar .back{border:0;background:none;font-weight:700;text-decoration:underline;padding:0}
-.body{flex:1;overflow-y:auto;padding:14px}
-.nav{flex:none;display:grid;grid-template-columns:1fr 1fr;border-top:1px solid #777}
-.nav button{border:0;border-right:1px solid #ccc;background:#fff;padding:14px 4px;font-size:12px}
-.nav button:last-child{border:0}
-.nav button.on{background:var(--fill);font-weight:700}
-h2{font-size:17px;margin:0 0 10px;display:flex;gap:7px;align-items:center}
-.lbl{display:block;font-size:10px;font-weight:700;color:#555;text-transform:uppercase;letter-spacing:.07em;margin:0 0 4px}
-.f{margin:0 0 10px}
-input,select,textarea{width:100%;border:1.5px solid #888;border-radius:4px;background:#fafafa;padding:9px;font-size:15px}
-textarea{min-height:80px}
-.r2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.r3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px}
-.r3 input,.r3 select{padding:8px 5px;font-size:13px}
-.btn{width:100%;min-height:44px;border:1.5px solid #555;border-radius:5px;background:#fff;font-weight:700;margin:0 0 8px}
-.btn.p{background:#666;border-color:#666;color:#fff}
-.btn:disabled{background:#eee;border-color:#ccc;color:#999;cursor:not-allowed}
-.link{border:0;background:none;text-decoration:underline;font-size:12px;font-weight:700;padding:0}
-.n{display:inline-flex;width:20px;height:20px;border-radius:50%;background:#333;color:#fff;font-size:11px;font-weight:700;align-items:center;justify-content:center;flex:none}
-.card{display:flex;gap:9px;border:1.5px solid #888;border-radius:5px;padding:8px;margin:0 0 9px;width:100%;background:#fff;text-align:left}
-.photo{background:#d4d4d4;border:1.5px solid #999;color:#777;font-size:11px;display:flex;align-items:center;justify-content:center;flex:none}
-.card .photo{width:62px;height:62px}
-.card b{font-size:14px}
-.m{font-size:11px;color:#555}
-.tag{display:inline-block;border:1px solid #777;background:#eee;font-size:10px;font-weight:700;padding:2px 6px;border-radius:3px;text-transform:uppercase}
-.note{border:1px dashed #999;background:var(--soft);border-radius:5px;padding:9px;font-size:11.5px;margin:10px 0;color:#444}
-.q{border:2px solid #333;border-radius:6px;padding:12px;margin:12px 0}
-.q b{display:block;margin-bottom:8px}
-.q .r2 .btn{margin:0}
-.kv{border:1.5px solid #bbb;border-radius:5px;margin:0 0 12px}
-.kv div{display:flex;justify-content:space-between;gap:10px;padding:8px 10px;border-bottom:1px solid #ddd;font-size:12px}
-.kv div:last-child{border:0}
-.kv span{color:#666}
-.steps{list-style:none;margin:6px 0 12px;padding:0}
-.steps li{display:flex;gap:9px;align-items:center;margin:7px 0;font-size:13px;color:#888}
-.steps i{width:16px;height:16px;border-radius:50%;border:2px solid #777;flex:none}
-.steps li.d{color:#222}.steps li.d i{background:#666}
-.steps li.c{color:#000;font-weight:700}.steps li.c i{background:#333;outline:2px solid #333;outline-offset:2px}
-.center{text-align:center;padding:26px 6px}
-.choice{display:block;width:100%;border:2px solid #444;border-radius:8px;background:#fff;padding:18px 14px;margin:0 0 12px;text-align:left}
-.choice b{display:block;font-size:17px;margin-bottom:3px}
-.choice span{font-size:12px;color:#555}
-.mod{border:1.5px dashed #777;border-radius:5px;padding:8px;margin-top:8px;background:#fafafa}
-.mod .m{margin-bottom:6px;font-weight:700}
-.mod .r2 .btn{margin:0;min-height:36px;font-size:12px}
-.modal{position:absolute;inset:0;z-index:5;background:rgba(0,0,0,.4);display:flex;align-items:flex-end;padding:8px}
-.sheet{background:#fff;border:1.5px solid #555;border-radius:12px;padding:14px;width:100%}
-.toast{position:absolute;left:50%;bottom:70px;transform:translateX(-50%);background:#333;color:#fff;padding:8px 12px;border-radius:5px;font-size:12px;z-index:9;max-width:85%;text-align:center}
-@media(max-width:480px){.phone{border-radius:20px}</style>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>JengaConnect clickable wireframe</title>
+	<style>
+		/* Same look as the JengaConnect wireframes. Every button simply moves to the next step. */
+		* {
+			box-sizing: border-box
+		}
+
+		body {
+			margin: 0;
+			background: #fff;
+			color: #222;
+			font-family: Arial, Helvetica, sans-serif
+		}
+
+		button,
+		input,
+		select,
+		textarea {
+			font: inherit;
+			color: inherit
+		}
+
+		button {
+			cursor: pointer
+		}
+
+		.page {
+			min-height: 100vh;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			padding: 14px
+		}
+
+		.phone {
+			width: 372px;
+			max-width: 100%;
+			height: min(760px, calc(100vh - 28px));
+			min-height: 600px;
+			border: 3px solid #555;
+			border-radius: 30px;
+			background: #fff;
+			padding: 16px 15px;
+			position: relative;
+			overflow: hidden
+		}
+
+		.screen {
+			height: 100%;
+			display: flex;
+			flex-direction: column;
+			overflow-y: auto
+		}
+
+		.bar {
+			flex: none;
+			height: 38px;
+			background: #d9d9d9;
+			border-radius: 5px;
+			display: flex;
+			align-items: center;
+			padding: 0 11px;
+			font-size: 15px;
+			font-weight: 700;
+			margin-bottom: 11px;
+			gap: 8px
+		}
+
+		.bar .t {
+			flex: 1
+		}
+
+		.bar button {
+			border: 0;
+			background: none;
+			font-weight: 700;
+			font-size: 15px;
+			padding: 0
+		}
+
+		.bar .exit {
+			font-size: 11px;
+			font-weight: 400;
+			color: #555;
+			text-decoration: underline
+		}
+
+		.fld {
+			border: 1.5px solid #888;
+			border-radius: 4px;
+			min-height: 36px;
+			margin: 7px 0;
+			padding: 0 10px;
+			font-size: 14px;
+			display: flex;
+			align-items: center;
+			color: #555;
+			background: #fafafa;
+			width: 100%
+		}
+
+		input.fld,
+		select.fld,
+		textarea.fld {
+			outline: 0
+		}
+
+		textarea.fld {
+			padding: 8px 10px;
+			min-height: 84px;
+			align-items: flex-start;
+			resize: none
+		}
+
+		.row2 {
+			display: flex;
+			gap: 8px
+		}
+
+		.row2>* {
+			flex: 1;
+			min-width: 0
+		}
+
+		.card {
+			border: 1.5px solid #888;
+			border-radius: 6px;
+			display: flex;
+			gap: 10px;
+			padding: 8px;
+			margin: 8px 0;
+			font-size: 14px;
+			line-height: 1.35;
+			background: #fff;
+			text-align: left;
+			width: 100%
+		}
+
+		.img {
+			width: 68px;
+			height: 68px;
+			background: #cfcfcf;
+			border: 1.5px solid #999;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			color: #777;
+			font-size: 12px;
+			flex: none
+		}
+
+		.bigimg {
+			width: 100%;
+			height: 130px;
+			background: #cfcfcf;
+			border: 1.5px solid #999;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			color: #777;
+			font-size: 14px;
+			margin-bottom: 10px;
+			gap: 6px
+		}
+
+		.btn {
+			width: 100%;
+			min-height: 42px;
+			background: #6b6b6b;
+			color: #fff;
+			border: 0;
+			border-radius: 6px;
+			font-size: 14px;
+			font-weight: 700;
+			margin: 9px 0 0
+		}
+
+		.btn.alt {
+			background: #fff;
+			color: #444;
+			border: 1.5px solid #6b6b6b
+		}
+
+		.kv {
+			font-size: 14px;
+			display: grid;
+			grid-template-columns: 104px 1fr;
+			gap: 7px 8px;
+			margin: 7px 0
+		}
+
+		.kv b {
+			color: #555
+		}
+
+		.chip {
+			display: inline-block;
+			border: 1.5px solid #888;
+			border-radius: 14px;
+			font-size: 12.5px;
+			padding: 5px 11px;
+			margin: 4px 4px 0 0;
+			background: #fff
+		}
+
+		.steps {
+			margin: 8px 0
+		}
+
+		.step {
+			display: flex;
+			align-items: center;
+			gap: 10px;
+			font-size: 14px;
+			margin: 9px 0
+		}
+
+		.dot {
+			width: 19px;
+			height: 19px;
+			border-radius: 50%;
+			border: 2px solid #666;
+			flex: none
+		}
+
+		.dot.on {
+			background: #666
+		}
+
+		.tag {
+			display: inline-flex;
+			width: 21px;
+			height: 21px;
+			border-radius: 50%;
+			background: #254F18;
+			color: #fff;
+			font-size: 12px;
+			font-weight: 700;
+			align-items: center;
+			justify-content: center;
+			flex: none
+		}
+
+		.small {
+			font-size: 12px;
+			color: #666;
+			margin: 6px 0;
+			display: flex;
+			align-items: center;
+			gap: 6px
+		}
+
+		.q {
+			border: 2px solid #254F18;
+			border-radius: 7px;
+			padding: 11px;
+			margin: 12px 0 0
+		}
+
+		.q p {
+			margin: 0 0 3px;
+			font-size: 14px;
+			font-weight: 700
+		}
+
+		.demo {
+			border: 1.5px dashed #888;
+			border-radius: 6px;
+			padding: 10px;
+			margin: 12px 0 0;
+			background: #fafafa
+		}
+
+		.status {
+			display: inline-block;
+			border: 1px solid #777;
+			border-radius: 3px;
+			background: #eee;
+			font-size: 11px;
+			font-weight: 700;
+			padding: 1px 6px
+		}
+
+		.logo {
+			width: 84px;
+			height: 84px;
+			border-radius: 50%;
+			background: #d4d4d4;
+			border: 1.5px solid #999;
+			color: #777;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			margin: 0 auto 14px;
+			font-size: 13px
+		}
+
+		.center {
+			text-align: center
+		}
+
+		.grow {
+			flex: 1
+		}
+	</style>
 </head>
+
 <body>
-<div class="page">
-  <div class="phone"><div class="app" id="app"></div></div>
-</div>
+	<div class="page">
+		<div class="phone">
+			<div class="screen" id="screen"></div>
+		</div>
+	</div>
 
-<script>
-(function(){
-"use strict";
-// ---------- sample data (edit freely) ----------
-const SEED=[
- {id:1,name:"Material A",qty:20,unit:"units",cond:"Used",area:"Kampala",price:"UGX ___",status:"Published"},
- {id:2,name:"Material B",qty:8,unit:"units",cond:"New",area:"Wakiso",price:"UGX ___",status:"Published"},
- {id:3,name:"Material C",qty:12,unit:"units",cond:"Damaged",area:"Kampala",price:"UGX ___",status:"Published"}];
-const STEPS=["Contacted","Inspected","Agreed","Collected"];
-const DEFAULT=()=>({role:null,screen:"landing",listings:JSON.parse(JSON.stringify(SEED)),sel:null,
-  req:null,q:"",minQty:"",area:"all",edit:null,draft:{},rep:null,toast:""});
-let S=DEFAULT();
-const $=s=>document.querySelector(s);
-const listing=id=>S.listings.find(l=>l.id===id);
-const esc=t=>String(t).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
-const photo=cls=>`<span class="photo ${cls||""}">photo</span>`;
-function go(screen){S.screen=screen;render();const b=$(".body");if(b)b.scrollTop=0}
-function toast(t){S.toast=t;render();setTimeout(()=>{S.toast="";const e=$(".toast");if(e)e.remove()},2200)}
-function step(){ // tracker index from request status
-  if(!S.req)return 0;
-  return {sent:0,counter:0,accepted:0,inspected:1,agreed:2,collected:3,closed:3}[S.req.status];}
+	<script>
+		(function () {
+			"use strict";
+			const tag = n => `<span class="tag">${n}</span>`;
+			const exit = `<button class="exit" data-go="login">Exit</button>`;
+			const bar = (title, back = true) => `<div class="bar">${back ? `<button data-back>‹ Back</button>` : ""}<span class="t">${title}</span>${exit}</div>`;
+			const listingCard = n => `<button class="card" data-go="b-listing"><span class="img">photo</span><span><b>Material ${n} · qty</b><br>Condition: ___<br>Area · UGX ___</span></button>`;
+			const steps = on => `<div class="steps">${["Contacted", "Inspected", "Agreed", "Collected"].map((s, i) => `<div class="step"><span class="dot ${i < on ? "on" : ""}"></span>${s}</div>`).join("")}</div>`;
+			const reqCard = (m, q, st) => `<button class="card" data-go="s-request"><span class="img">photo</span><span><b>${m}</b><br>${q}<br><span class="status">${st}</span> · tap to open</span></button>`;
+			const sellerCard = status => `<div class="card" style="cursor:default"><span class="img">photo</span><span><b>Material · qty</b><br>Status: <span class="status">${status}</span></span></div>`;
 
-// ---------- shared pieces ----------
-const bar=(title,back)=>`<div class="bar">${back?`<button class="back" data-act="go" data-v="${back}">‹ Back</button>`:""}<span class="t">${title}</span>${S.screen==="landing"?"":`<button class="back" id="home" style="font-weight:400;font-size:11px">Switch role</button>`}</div>`;
-const nav=(items,on)=>`<div class="nav">${items.map(([k,t])=>`<button data-act="go" data-v="${k}" class="${k===on?"on":""}">${t}</button>`).join("")}</div>`;
-const buyerNav=on=>nav([["b-browse","Browse"],["b-requests","Requests"]],on);
-const sellerNav=on=>nav([["s-listings","My listings"],["s-requests","Requests"]],on);
-const reportSheet=()=>S.rep?`<div class="modal"><div class="sheet">
-  <h2>Report ${S.rep==="inspection"?"inspection problem":"listing"}</h2>
-  <p class="note" style="margin-top:0">Reports go to moderators.</p>
-  <div class="f"><label class="lbl">Reason</label><select id="rr"><option value="">Choose a reason</option><option>Wrong material or quantity</option><option>Already sold or not available</option><option>Unsafe or misleading listing</option><option>Price or permission problem</option><option>Other</option></select></div>
-  <div class="f"><label class="lbl">What happened?</label><textarea id="rd" placeholder="Tell moderators what happened…"></textarea></div>
-  <button class="btn p" data-act="sendReport">Submit report</button><button class="btn" data-act="closeReport">Cancel</button></div></div>`:"";
+			// every screen below; every button moves to the next step, whatever has been typed
+			const SCREENS = {
+				login: () => `<div class="grow"></div><div class="center"><div class="logo">logo</div><h2 style="margin:0 0 4px;font-size:26px">JengaConnect</h2><p class="small" style="justify-content:center">Log in to continue</p></div>
+ <button class="btn" data-go="b-browse" style="min-height:48px;font-size:15px;margin-top:22px">Log in as Buyer</button>
+ <button class="btn alt" data-go="s-create" style="min-height:48px;font-size:15px">Log in as Seller</button><div class="grow"></div>`,
 
-// ---------- screens ----------
-const V={};
-V.landing=()=>({html:`<div class="body" style="display:flex;flex-direction:column;justify-content:center">
-  <div class="center" style="padding:0 0 26px"><div class="photo" style="width:72px;height:72px;margin:0 auto 14px;border-radius:50%">logo</div>
-  <h2 style="justify-content:center;font-size:26px;margin-bottom:4px">JengaConnect</h2>
-  <p class="m">Log in to continue</p></div>
-  <button class="btn p" data-act="role" data-v="buyer" style="min-height:50px;font-size:15px">Log in as Buyer</button>
-  <button class="btn" data-act="role" data-v="seller" style="min-height:50px;font-size:15px">Log in as Seller</button>
-  <p style="text-align:center;margin-top:22px"><button class="link" id="restart" style="font-weight:400;color:#777">Reset demo</button></p></div>`});
+				// ----- BUYER -----
+				"b-browse": () => `${bar("JengaConnect", false)}
+ <div class="fld">${tag(1)}&nbsp;&nbsp;Material (e.g. bricks, cement)</div>
+ <div class="row2"><div class="fld">Quantity</div><div class="fld">Area ▾</div></div>
+ <div class="fld">Collection: pick-up ▾</div>
+ ${listingCard("A")}${listingCard("B")}${listingCard("C")}`,
 
-// BUYER
-V["b-browse"]=()=>{
-  const q=S.q.trim().toLowerCase(),mq=Number(S.minQty)||0;
-  const res=S.listings.filter(l=>l.status==="Published"&&(!q||l.name.toLowerCase().includes(q))&&(!mq||l.qty>=mq)&&(S.area==="all"||l.area===S.area));
-  return {html:`${bar("JengaConnect")}<div class="body">
-  <h2>Find materials <i class="n">1</i></h2>
-  <div class="f"><label class="lbl">Search material</label><input id="q" type="search" placeholder="Material (e.g. bricks, cement)" value="${esc(S.q)}"></div>
-  <div class="r3 f"><div><label class="lbl">Quantity</label><input id="mq" type="number" min="1" placeholder="___" value="${esc(S.minQty)}"></div>
-   <div><label class="lbl">Area</label><select id="ar"><option value="all">All</option><option ${S.area==="Kampala"?"selected":""}>Kampala</option><option ${S.area==="Wakiso"?"selected":""}>Wakiso</option></select></div>
-   <div><label class="lbl">Collection</label><select><option>pick-up</option></select></div></div>
-  <p class="m"><b>${res.length} listing${res.length===1?"":"s"}</b></p>
-  ${res.map(l=>`<button class="card" data-act="open" data-v="${l.id}">${photo()}<span><b>${esc(l.name)}</b> · ${l.qty} ${l.unit}<br><span class="m">Condition: ${l.cond}<br>${l.area} · ${l.price}</span></span></button>`).join("")}
-  ${res.length?"":`<div class="note center"><b>No matching listings nearby</b><br>Change filters and try again.<br><br><button class="btn" data-act="clear" style="width:auto;padding:0 18px">Change filters</button></div>`}
-  </div>${buyerNav("b-browse")}`}};
+				"b-listing": () => `${bar("Listing")}
+ <div class="bigimg">${tag(2)}photos (swipe)</div>
+ <div class="kv"><b>Material</b><span>_______</span><b>Quantity</b><span>___ units</span><b>Condition</b><span>new / used / damaged</span><b>Area</b><span>general only</span><b>Asking</b><span>UGX ___</span><b>Seller</b><span>permission stated</span></div>
+ <div class="small">Exact site address is not shown.</div>
+ <button class="btn" data-go="b-contact">Ask the seller</button>
+ <button class="btn alt" data-go="report-listing">Report listing</button>`,
 
-V["b-listing"]=()=>{const l=listing(S.sel);return {html:`${bar("Listing","b-browse")}<div class="body">
-  <div class="photo" style="height:120px;margin-bottom:10px">photos (swipe) <i class="n" style="margin-left:6px">2</i></div>
-  <div class="kv"><div><span>Material</span><b>${esc(l.name)}</b></div><div><span>Quantity</span><b>${l.qty} ${l.unit}</b></div><div><span>Condition</span><b>${l.cond}</b></div><div><span>General area</span><b>${l.area}</b></div><div><span>Asking price</span><b>${l.price}</b></div><div><span>Seller permission</span><b>stated</b></div></div>
-  <p class="m">Exact site address is not shown.</p>
-  <div class="q"><b>Are the condition and quantity acceptable?</b>
-   <button class="btn p" data-act="go" data-v="b-contact" style="margin-bottom:8px">Yes · ask the seller</button>
-   <button class="btn" data-act="go" data-v="b-browse" style="margin:0">No · back to Browse</button></div>
-  <button class="link" data-act="report" data-v="listing">Report listing <i class="n" style="margin-left:4px">5</i></button>
-  </div>${buyerNav("b-browse")}${reportSheet()}`}};
+				"report-listing": () => `${bar("Report listing")}
+ <div class="small">${tag(5)}Reports go to moderators</div>
+ <select class="fld"><option>Reason ▾</option><option>Wrong material or quantity</option><option>Unsafe or misleading</option><option>Other</option></select>
+ <textarea class="fld" placeholder="What happened?"></textarea>
+ <button class="btn" data-go="b-browse">Submit report</button>`,
 
-V["b-contact"]=()=>{const l=listing(S.sel);return {html:`${bar("Contact seller","b-listing")}<div class="body">
-  <h2>Contact the seller <i class="n">3</i></h2>
-  <div class="card" style="cursor:default">${photo()}<span><b>${esc(l.name)}</b><br><span class="m">${l.qty} ${l.unit} · ${l.area}</span></span></div>
-  <p class="lbl">Quick questions</p>
-  <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px">${["Still available?","Can I inspect first?","Part quantity?","Collection cost?"].map(t=>`<button class="card" style="width:auto;padding:5px 10px;border-radius:14px;margin:0;font-size:11px" data-act="chip" data-v="${t}">${t}</button>`).join("")}</div>
-  <div class="f"><textarea id="msg" placeholder="Type a question…"></textarea></div>
-  <p class="lbl">Propose an inspection time</p>
-  <div class="r2 f"><select id="dt"><option value="">Date</option><option>Tomorrow</option><option>This Saturday</option><option>Next Saturday</option></select><select id="tm"><option value="">Time</option><option>Morning 09:00–12:00</option><option>Afternoon 14:00–17:00</option></select></div>
-  <button class="btn p" data-act="send">Send request</button></div>${buyerNav("b-browse")}`}};
+				"b-contact": () => `${bar("Contact seller")}
+ <div class="small">${tag(3)}Quick questions</div>
+ <div><span class="chip">Still available?</span><span class="chip">Can I inspect first?</span><span class="chip">Part quantity?</span><span class="chip">Collection cost?</span></div>
+ <textarea class="fld" placeholder="Type a question…" style="margin-top:12px"></textarea>
+ <div class="small" style="margin-top:8px">Inspection arrangement</div>
+ <div class="row2"><select class="fld"><option>Date ▾</option><option>Tomorrow</option><option>This Saturday</option></select><select class="fld"><option>Time ▾</option><option>Morning</option><option>Afternoon</option></select></div>
+ <button class="btn" data-go="b-waiting">Send request</button>`,
 
-function buyerStatusPanel(){
-  const r=S.req,st=r.status;
-  if(st==="sent")return `<div class="note"><b>Waiting for the seller to reply.</b><br>Demo: switch role (top right) to Seller, open Requests and respond.</div>`;
-  if(st==="counter")return `<div class="q"><b>Seller suggested another time: ${esc(r.time)}</b><button class="btn p" data-act="acceptCounter">Accept this time</button><button class="btn" data-act="cancelReq" style="margin:0">No · back to Browse</button></div>`;
-  if(st==="accepted")return `<div class="note">Seller agreed to inspection: <b>${esc(r.time)}</b></div><div class="q"><b>After inspecting: does it confirm the listing?</b><div class="r2"><button class="btn p" data-act="inspectYes">Yes</button><button class="btn" data-act="inspectNo">No</button></div></div>`;
-  if(st==="inspected")return `<div class="q"><b>Agree quantity, window and total cost. Is the total cost still worthwhile?</b><div class="r2"><button class="btn p" data-act="costYes">Yes</button><button class="btn" data-act="cancelReq">No · cancel</button></div></div>`;
-  if(st==="agreed")return `<button class="btn p" data-act="collected">Collect material and mark complete</button>`;
-  return `<div class="note">Marked complete. Waiting for the seller to confirm collection.</div>`;
-}
-V["b-collection"]=()=>{const r=S.req,l=listing(r.lid),i=step();return {html:`${bar("Collection","b-requests")}<div class="body">
-  <div class="card" style="cursor:default">${photo()}<span><b>${esc(l.name)}</b><br><span class="m">${l.qty} ${l.unit} · ${l.area}</span></span></div>
-  <div class="kv"><div><span>Agreed quantity</span><b>${l.qty} ${l.unit}</b></div><div><span>Collection window</span><b>${esc(r.time||"___")}</b></div><div><span>Total cost</span><b>UGX ___ + transport</b></div></div>
-  <p class="lbl">Status <i class="n" style="margin-left:4px">4</i></p>
-  <ul class="steps">${STEPS.map((s,k)=>`<li class="${k<i?"d":k===i?"c":""}"><i></i>${s}</li>`).join("")}</ul>
-  ${buyerStatusPanel()}
-  <p style="margin-top:10px"><button class="link" data-act="report" data-v="listing">Problem? Report to moderators <i class="n" style="margin-left:4px">5</i></button></p>
-  </div>${buyerNav("b-requests")}${reportSheet()}`}};
+				"b-waiting": () => `${bar("Request sent")}
+ <div class="center" style="padding:30px 0 14px"><div class="logo" style="width:64px;height:64px;font-size:11px">sent</div><b>Waiting for the seller to reply</b><div class="small" style="justify-content:center">Material · qty</div></div>
+ <div class="demo"><div class="small" style="margin:0 0 4px"><b>Seller side (demo)</b></div><div class="small" style="margin:0">Seller replies and agrees to the inspection.</div>
+ <button class="btn" data-go="b-inspect">Seller agrees to inspection</button></div>`,
 
-V["b-requests"]=()=>{const r=S.req;return {html:`${bar("Requests")}<div class="body">
-  ${r?`<button class="card" data-act="go" data-v="b-collection" style="display:block"><b>${esc(listing(r.lid).name)}</b> <span class="tag" style="float:right">${r.status==="closed"?"Complete":r.status==="collected"?"Collected":STEPS[step()]}</span><br><span class="m">Tap to view collection</span></button>`
-  :`<div class="note center"><b>No requests yet</b><br>Requests you send will appear here.<br><br><button class="btn p" data-act="go" data-v="b-browse" style="width:auto;padding:0 18px">Browse materials</button></div>`}
-  </div>${buyerNav("b-requests")}`}};
+				"b-inspect": () => `${bar("Inspection")}
+ <div class="kv"><b>Seller</b><span>agreed</span><b>Inspection</b><span>day · time</span><b>Material</b><span>_______</span></div>
+ <div class="small">Buyer inspects the material at the agreed time.</div>
+ <div class="q"><p>Does the inspection confirm the listing?</p>
+  <button class="btn" data-go="b-collection">Yes</button>
+  <button class="btn alt" data-go="report-inspect">No · report to moderators</button></div>`,
 
-V["b-complete"]=()=>({html:`${bar("Complete")}<div class="body"><div class="center"><h2 style="justify-content:center">Exchange complete</h2><p class="m">You marked this collection as complete.<br>The seller will confirm collection.</p><button class="btn p" data-act="go" data-v="b-browse" style="width:auto;padding:0 20px">Back to Browse</button></div></div>${buyerNav("b-requests")}`});
+				"report-inspect": () => `${bar("Report to moderators")}
+ <div class="small">${tag(5)}Listing did not match the inspection</div>
+ <select class="fld"><option>Reason ▾</option><option>Wrong material or quantity</option><option>Condition worse than listed</option><option>Other</option></select>
+ <textarea class="fld" placeholder="What happened?"></textarea>
+ <button class="btn" data-go="b-browse">Submit report · back to Browse</button>`,
 
-// SELLER
-V["s-create"]=()=>{const d=S.draft;return {html:`${bar(S.edit?"Edit listing":"New listing","s-listings")}<div class="body">
-  <div class="f"><label class="lbl">Material</label><input id="cm" value="${esc(d.name||"")}" placeholder="Material"></div>
-  <div class="r2 f"><div><label class="lbl">Quantity</label><input id="cq" type="number" min="1" value="${esc(d.qty||"")}" placeholder="___"></div>
-   <div><label class="lbl">Unit</label><select id="cu">${["units","bags","pieces","metres"].map(u=>`<option ${d.unit===u?"selected":""}>${u}</option>`).join("")}</select></div></div>
-  <div class="r2 f"><div><label class="lbl">Condition</label><select id="cc">${["New","Used","Damaged"].map(u=>`<option ${d.cond===u?"selected":""}>${u}</option>`).join("")}</select></div>
-   <div><label class="lbl">General area</label><select id="ca">${["Kampala","Wakiso"].map(u=>`<option ${d.area===u?"selected":""}>${u}</option>`).join("")}</select></div></div>
-  <div class="f"><label class="lbl">Asking price</label><input id="cp" value="${esc(d.price||"")}" placeholder="UGX ___"></div>
-  <div class="r2 f"><span class="photo" style="height:60px">+ photo</span><span class="photo" style="height:60px">+ photo</span></div>
-  <label style="display:flex;gap:8px;align-items:flex-start;font-size:12px;margin:8px 0 12px"><input id="cperm" type="checkbox" style="width:auto;margin-top:2px" ${d.perm?"checked":""}>I have permission to sell this material</label>
-  <p class="m" id="cerr" hidden style="color:#000;font-weight:700">Add a material, a quantity and tick the permission box.</p>
-  <button class="btn p" data-act="submit">Submit for review</button></div>${sellerNav("s-listings")}`}};
+				"b-collection": () => `${bar("Collection")}
+ <div class="kv"><b>Agreed qty</b><span>___ units</span><b>Window</b><span>day · time</span><b>Total cost</b><span>UGX ___ + transport</span></div>
+ <div class="small">${tag(4)}Status</div>${steps(2)}
+ <div class="q"><p>Is the total cost still worthwhile?</p>
+  <button class="btn" data-go="b-agreed">Yes · agree</button>
+  <button class="btn alt" data-go="b-browse">No · cancel</button></div>
+ <div class="small" style="margin-top:12px">${tag(5)}<button data-go="report-inspect" style="border:0;background:none;padding:0;font-size:12px;color:#666;text-decoration:underline">Problem? Report to moderators</button></div>`,
 
-V["s-listings"]=()=>({html:`${bar("My listings")}<div class="body">
-  <button class="btn p" data-act="new">+ New listing</button>
-  ${S.listings.map(l=>`<div class="card" style="display:block"><div style="display:flex;gap:9px">${photo()}<span style="flex:1"><b>${esc(l.name)}</b> · ${l.qty} ${l.unit}<br><span class="m">${l.cond} · ${l.area}</span><br><span class="tag">${l.status}</span></span></div>
-    ${l.status==="Pending review"?`<div class="mod"><div class="m">Moderator check (demo): passed?</div><div class="r2"><button class="btn p" data-act="mod" data-v="${l.id}:ok">Yes · publish</button><button class="btn" data-act="mod" data-v="${l.id}:no">No · reject</button></div></div>`:""}
-    ${l.status==="Rejected"?`<button class="btn" style="margin:8px 0 0" data-act="editL" data-v="${l.id}">Edit and resubmit</button>`:""}</div>`).join("")}
-  <p class="m">Listings are checked by moderators before they appear to buyers. <i class="n">5</i></p>
-  </div>${sellerNav("s-listings")}`});
+				"b-agreed": () => `${bar("Collection")}
+ <div class="kv"><b>Agreed qty</b><span>___ units</span><b>Window</b><span>day · time</span><b>Total cost</b><span>UGX ___ + transport</span></div>
+ <div class="small">${tag(4)}Status</div>${steps(3)}
+ <button class="btn" data-go="b-done">Collect material · mark complete</button>`,
 
-V["s-requests"]=()=>{const r=S.req;let inner;
-  if(!r)inner=`<div class="note center"><b>No buyer requests yet</b><br>Demo: switch role to Buyer, find a listing and send a request.</div>`;
-  else{const l=listing(r.lid),st=r.status;
-   inner=`<div class="card" style="display:block"><b>${esc(l.name)}</b> · ${l.qty} ${l.unit} <span class="tag" style="float:right">${st==="sent"?"New":st==="counter"?"Awaiting buyer":st==="accepted"||st==="inspected"||st==="agreed"?"Reserved":st==="collected"?"Collected":st==="closed"?"Closed":st}</span>
-    <div class="note">“${esc(r.msg||"Is this still available?")}”<br><span class="m">Proposed inspection: ${esc(r.time||"not set")}</span></div>
-    ${st==="sent"?`<div class="q"><b>Accept the inspection time?</b><button class="btn p" data-act="accept">Accept</button><div class="r2 f" style="margin-bottom:8px"><select id="sdt"><option>Tomorrow</option><option>This Saturday</option><option>Next Saturday</option></select><select id="stm"><option>Morning 09:00–12:00</option><option>Afternoon 14:00–17:00</option></select></div><button class="btn" data-act="counter" style="margin:0">Suggest another time</button></div>`:""}
-    ${st==="counter"?`<p class="m">You suggested: ${esc(r.time)}. Demo: switch to Buyer to respond.</p>`:""}
-    ${st==="accepted"||st==="inspected"||st==="agreed"?`<p class="m">Buyer is inspecting and agreeing collection.</p>`:""}
-    ${st==="collected"?`<p class="m">Buyer says collection is done.</p><button class="btn p" data-act="confirmColl">Confirm collection</button>`:""}
-    ${st==="closed"?`<p class="m"><b>Listing collected.</b> Exchange finished.</p>`:""}</div>`;}
-  return {html:`${bar("Requests")}<div class="body">${inner}</div>${sellerNav("s-requests")}`}};
+				"b-done": () => `<div class="grow"></div><div class="center"><div class="logo">done</div><h2 style="margin:0 0 6px">Exchange complete</h2>
+ <div class="small" style="justify-content:center">The seller confirms collection</div>${steps(4)}</div>
+ <button class="btn" data-go="login">Back to start</button><div class="grow"></div>`,
 
-// ---------- render ----------
-function render(){
-  const v=V[S.screen]();
-  $("#app").innerHTML=`${v.html}${S.toast?`<div class="toast">${esc(S.toast)}</div>`:""}`;
-  const q=$("#q");if(q&&document.activeElement===document.body&&S._focusQ){q.focus();q.setSelectionRange(q.value.length,q.value.length);S._focusQ=false}
-}
+				// ----- SELLER -----
+				"s-create": () => `${bar("New listing", false)}
+ <div class="fld">${tag(1)}&nbsp;&nbsp;Material</div>
+ <div class="row2"><input class="fld" placeholder="Quantity"><select class="fld"><option>Unit ▾</option><option>units</option><option>bags</option></select></div>
+ <select class="fld"><option>Condition: new / used / damaged ▾</option><option>New</option><option>Used</option><option>Damaged</option></select>
+ <select class="fld"><option>General area ▾</option><option>Kampala</option><option>Wakiso</option></select>
+ <input class="fld" placeholder="Asking price: UGX ___">
+ <div class="row2" style="margin-top:7px"><div class="img" style="width:auto;height:50px">+ photo</div><div class="img" style="width:auto;height:50px">+ photo</div></div>
+ <label class="small" style="margin:10px 0 0"><input type="checkbox" style="width:auto"> I have permission to sell this material</label>
+ <button class="btn" data-go="s-listings">Submit for review</button>`,
 
-// ---------- actions ----------
-const A={
- go:v=>go(v),
- role:v=>{S.role=v;go(v==="buyer"?"b-browse":"s-listings")},
- open:v=>{S.sel=+v;go("b-listing")},
- clear:()=>{S.q="";S.minQty="";S.area="all";render()},
- report:v=>{S.rep=v;render()},
- closeReport:()=>{S.rep=null;render()},
- sendReport:()=>{if(!$("#rr").value){$("#rr").focus();return}const insp=S.rep==="inspection";S.rep=null;
-   if(insp){S.req=null;S.listings.forEach(l=>{if(l.status==="Reserved")l.status="Published"});go("b-browse")}else render();
-   toast("Report sent to moderators")},
- chip:v=>{const m=$("#msg");m.value=m.value?m.value+"\n"+v:v;m.focus()},
- send:()=>{const msg=$("#msg").value.trim(),d=$("#dt").value,t=$("#tm").value;
-   S.req={lid:S.sel,msg,time:[d,t].filter(Boolean).join(" · "),status:"sent"};go("b-collection");toast("Request sent")},
- acceptCounter:()=>{S.req.status="accepted";render();toast("Time accepted")},
- cancelReq:()=>{S.req=null;S.listings.forEach(l=>{if(l.status==="Reserved")l.status="Published"});go("b-browse");toast("Request cancelled")},
- inspectYes:()=>{S.req.status="inspected";render()},
- inspectNo:()=>{S.rep="inspection";render()},
- costYes:()=>{S.req.status="agreed";render()},
- collected:()=>{S.req.status="collected";go("b-complete")},
- new:()=>{S.edit=null;S.draft={};go("s-create")},
- editL:v=>{const l=listing(+v);S.edit=l.id;S.draft={name:l.name,qty:l.qty,unit:l.unit,cond:l.cond,area:l.area,price:l.price==="UGX ___"?"":l.price,perm:false};go("s-create")},
- submit:()=>{const name=$("#cm").value.trim(),qty=Number($("#cq").value),perm=$("#cperm").checked;
-   if(!name||!qty||!perm){$("#cerr").hidden=false;return}
-   const data={name,qty,unit:$("#cu").value,cond:$("#cc").value,area:$("#ca").value,price:$("#cp").value.trim()||"UGX ___",status:"Pending review"};
-   if(S.edit)Object.assign(listing(S.edit),data);else S.listings.unshift(Object.assign({id:Date.now()},data));
-   S.edit=null;go("s-listings");toast("Submitted for review")},
- mod:v=>{const [id,res]=v.split(":");listing(+id).status=res==="ok"?"Published":"Rejected";render();toast(res==="ok"?"Listing published":"Listing rejected: edit and resubmit")},
- accept:()=>{S.req.status="accepted";listing(S.req.lid).status="Reserved";render();toast("Inspection accepted")},
- counter:()=>{S.req.time=$("#sdt").value+" · "+$("#stm").value;S.req.status="counter";render();toast("New time suggested")},
- confirmColl:()=>{S.req.status="closed";listing(S.req.lid).status="Collected";render();toast("Listing collected")}
-};
-document.addEventListener("click",e=>{
-  if(e.target.id==="restart"){S=DEFAULT();render();return}
-  if(e.target.id==="home"){S.role=null;S.rep=null;go("landing");return}
-  const el=e.target.closest("[data-act]");if(el&&A[el.dataset.act])A[el.dataset.act](el.dataset.v)});
-document.addEventListener("input",e=>{
-  if(e.target.id==="q"){S.q=e.target.value;S._focusQ=true;render()}
-  if(e.target.id==="mq"){S.minQty=e.target.value;render();const m=$("#mq");m.focus();m.setSelectionRange(m.value.length,m.value.length)}});
-document.addEventListener("change",e=>{if(e.target.id==="ar"){S.area=e.target.value;render()}});
-render();
-})();
-</script>
+				"s-listings": () => `${bar("My listings")}
+ ${sellerCard("Pending review")}
+ <div class="demo"><div class="small" style="margin:0 0 2px"><b>Moderator check (demo)</b></div><div class="small" style="margin:0">${tag(2)}Listings are checked before they appear</div>
+  <button class="btn" data-go="s-published">Passed · publish</button></div>`,
+
+				"s-published": () => `${bar("My listings")}
+ ${sellerCard("Published")}
+ <div class="small">Listing is now visible to buyers.</div>
+ <div class="demo"><div class="small" style="margin:0"><b>Buyers have sent requests (demo)</b></div>
+  <button class="btn" data-go="s-requests">Open Requests</button></div>`,
+
+				"s-requests": () => `${bar("Requests")}
+ <div class="small">Buyer requests for your listings</div>
+ ${reqCard("Material A · qty", "“Can I inspect first?”", "New")}
+ ${reqCard("Material B · qty", "“Part quantity?”", "New")}
+ ${reqCard("Material C · qty", "“Still available?”", "Replied")}`,
+
+				"s-request": () => `${bar("Buyer request")}
+ <div class="small">${tag(3)}Buyer question</div>
+ <div class="fld" style="min-height:50px;align-items:flex-start;padding-top:8px">“Can I inspect first?”</div>
+ <div class="kv"><b>Proposed</b><span>date · time</span><b>Quantity</b><span>___ units</span></div>
+ <button class="btn" data-go="s-reserved">Accept</button>
+ <button class="btn alt" data-go="s-reserved">Suggest another time</button>`,
+
+				"s-reserved": () => `${bar("Reserved")}
+ ${sellerCard("Reserved")}
+ <div class="small" style="margin-top:10px">Buyer inspects and collects the material.</div>
+ <div class="small">${tag(4)}After inspection</div>
+ <button class="btn" data-go="s-done">Confirm collection</button>`,
+
+				"s-done": () => `<div class="grow"></div><div class="center"><div class="logo">done</div><h2 style="margin:0 0 6px">Listing collected</h2>
+ <div class="small" style="justify-content:center">Exchange finished</div></div>
+ ${sellerCard("Collected")}
+ <button class="btn" data-go="login">Back to start</button><div class="grow"></div>`
+			};
+
+			// ---------- navigation ----------
+			let current = "login", stack = [];
+			function show(id, push) {
+				if (push) stack.push(current);
+				if (id === "login") stack = [];
+				current = id;
+				const el = document.getElementById("screen");
+				el.innerHTML = SCREENS[id]();
+				el.scrollTop = 0;
+			}
+			document.addEventListener("click", e => {
+				const go = e.target.closest("[data-go]");
+				if (go) {show(go.dataset.go, true); return }
+				if (e.target.closest("[data-back]")) show(stack.pop() || "login", false);
+			});
+			show("login", false);
+		})();
+	</script>
 </body>
+
 </html>

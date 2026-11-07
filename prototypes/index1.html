@@ -1,0 +1,1210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>JengaConnect — Low-fidelity wireframes</title>
+<style>
+  :root{
+    --bg:#e9e9e9;
+    --paper:#fff;
+    --ink:#1d1d1d;
+    --line:#2b2b2b;
+    --line-mid:#9a9a9a;
+    --line-soft:#cfcfcf;
+    --fill:#dcdcdc;
+    --fill-soft:#efefef;
+    --muted:#5f5f5f;
+    --muted-2:#8a8a8a;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:var(--bg);
+    color:var(--ink);
+    font-size:12px;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  /* ---------- toolbar (outside the canvas) ---------- */
+  .toolbar{
+    position:sticky;top:0;z-index:80;
+    display:flex;align-items:center;gap:16px;
+    padding:10px 20px;
+    background:#f7f7f7;
+    border-bottom:1px solid #bdbdbd;
+    font-size:12px;
+  }
+  .toolbar .t{font-weight:800;letter-spacing:-.01em;}
+  .toolbar .sub{color:#6d6d6d;}
+  .zoom{margin-left:auto;display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
+  .zoom .zlabel{color:#6d6d6d;margin-right:2px;}
+  .zoom button{
+    font:inherit;font-size:11px;font-weight:600;
+    padding:5px 9px;border:1px solid #8f8f8f;background:#fff;color:#222;cursor:pointer;
+  }
+  .zoom button:hover{background:#e4e4e4;}
+  .zoom button.on{background:#222;color:#fff;border-color:#222;}
+
+  /* ---------- canvas ---------- */
+  .viewport{overflow:auto;padding:48px 56px 96px;}
+  .scaler{position:relative;}
+  .stage{position:absolute;top:0;left:0;width:2334px;transform-origin:0 0;}
+
+  .canvas-head{
+    display:flex;align-items:flex-end;justify-content:space-between;gap:48px;
+    margin:0 0 54px;
+  }
+  .canvas-head .kicker{
+    font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#666;
+    margin-bottom:10px;
+  }
+  .canvas-head h1{
+    margin:0;font-size:30px;line-height:1.15;font-weight:800;letter-spacing:-.02em;
+    max-width:1200px;
+  }
+  .canvas-head .sub{margin-top:10px;font-size:13px;color:#555;line-height:1.5;}
+  .canvas-head .note{
+    border:1px solid #a2a2a2;background:#f2f2f2;
+    padding:14px 16px;font-size:11px;line-height:1.7;color:#555;
+    width:390px;flex:none;
+  }
+  .canvas-head .note b{color:#222;}
+
+  /* ---------- grid + cells ---------- */
+  .grid{
+    display:grid;
+    grid-template-columns:repeat(5,390px);
+    column-gap:96px;
+    row-gap:150px;
+    width:2334px;
+    position:relative;
+  }
+  .cell{position:relative;}
+  .cell-label{
+    height:30px;display:flex;align-items:center;gap:8px;
+    margin-bottom:0;font-size:12px;font-weight:700;letter-spacing:.03em;
+  }
+  .cell-label .no{
+    font-size:9px;font-weight:700;letter-spacing:.08em;
+    border:1px solid #777;color:#444;background:#f3f3f3;
+    padding:3px 6px;line-height:1;white-space:nowrap;
+  }
+  .cell-label .desc{
+    margin-left:auto;font-size:10px;font-weight:400;color:#767676;letter-spacing:0;
+    white-space:nowrap;
+  }
+
+  /* ---------- phone frame ---------- */
+  .frame{
+    width:390px;height:844px;background:var(--paper);
+    border:1.5px solid var(--line);
+    display:flex;flex-direction:column;
+    position:relative;overflow:hidden;
+  }
+  .body{flex:1;min-height:0;display:flex;flex-direction:column;overflow:hidden;}
+  .body.pad{padding:16px;gap:12px;}
+
+  /* arrows overlay */
+  #arrows{position:absolute;top:0;left:0;z-index:20;pointer-events:none;overflow:visible;}
+  .alabel{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    font-size:9.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+    fill:#4a4a4a;paint-order:stroke;stroke:#e9e9e9;stroke-width:3.5px;stroke-linejoin:round;
+  }
+  .alabel.soft{fill:#757575;}
+
+  /* ---------- shared app chrome ---------- */
+  .app-head{
+    flex:none;display:flex;align-items:flex-start;justify-content:space-between;
+    padding:16px 16px 12px;border-bottom:1px solid var(--line-soft);
+  }
+  .wordmark{font-size:20px;font-weight:800;letter-spacing:-.02em;line-height:1.1;}
+  .micro{font-size:9.5px;letter-spacing:.07em;text-transform:uppercase;color:#6d6d6d;line-height:1.4;}
+  .app-head .micro{margin-top:4px;}
+  .avatar{
+    width:34px;height:34px;border:1px solid #8a8a8a;
+    display:grid;place-items:center;font-size:9px;color:#777;background:#f6f6f6;
+  }
+  .topline{
+    flex:none;display:flex;align-items:center;justify-content:space-between;gap:8px;
+    padding:12px 16px;border-bottom:1px solid var(--line-soft);min-height:46px;
+  }
+  .back{font-size:12px;font-weight:700;color:#222;}
+  .link{font-size:11px;color:#555;text-decoration:underline;text-underline-offset:2px;}
+  .nav{
+    flex:none;display:grid;grid-template-columns:repeat(4,1fr);
+    height:62px;border-top:1.5px solid var(--line);background:#fff;
+  }
+  .nav .tab{
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;
+    font-size:10px;color:#666;border-right:1px solid #d2d2d2;position:relative;
+  }
+  .nav .tab:last-child{border-right:none;}
+  .nav .tab .glyph{width:17px;height:12px;border:1px solid #8a8a8a;background:#fff;display:block;}
+  .nav .tab.on{background:#ececec;color:#111;font-weight:700;}
+  .nav .tab.on .glyph{background:#222;border-color:#222;}
+  .nav .tab.on::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;background:#222;}
+
+  /* ---------- shared atoms ---------- */
+  .badge{
+    width:21px;height:21px;border-radius:50%;background:#1f1f1f;color:#fff;
+    display:inline-grid;place-items:center;font-size:11px;font-weight:800;line-height:1;
+    vertical-align:middle;flex:none;
+  }
+  .section-label{
+    display:flex;align-items:center;gap:6px;
+    font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#444;
+  }
+  .input{
+    min-height:40px;border:1px solid #9c9c9c;background:#fbfbfb;
+    display:flex;align-items:center;justify-content:space-between;gap:8px;
+    padding:0 11px;font-size:12px;color:#8c8c8c;
+  }
+  .input.solid{color:#222;background:#fff;}
+  .caret{font-size:10px;color:#777;}
+  .btn{
+    border:1px solid #2b2b2b;background:#e4e4e4;color:#1d1d1d;
+    padding:11px 12px;text-align:center;font-size:12px;font-weight:700;
+    display:flex;align-items:center;justify-content:center;min-height:44px;
+  }
+  .btn.primary{background:#2f2f2f;color:#fff;border-color:#2f2f2f;}
+  .btn.ghost{background:#fff;color:#222;}
+  .btn.small{min-height:34px;padding:7px 10px;font-size:11px;}
+  .btn.tiny{min-height:28px;padding:4px 9px;font-size:10px;font-weight:600;}
+  .chip{
+    border:1px solid #9a9a9a;background:#f7f7f7;
+    padding:7px 9px;font-size:10.5px;color:#333;
+    display:inline-flex;align-items:center;gap:5px;white-space:nowrap;
+  }
+  .chip.on{background:#e0e0e0;border-color:#333;font-weight:700;}
+  .ph{
+    background:#dedede;border:1px solid #b1b1b1;color:#6d6d6d;
+    display:grid;place-items:center;font-size:10px;letter-spacing:.1em;text-transform:lowercase;
+    flex:none;overflow:hidden;
+  }
+  .meta{font-size:11px;line-height:1.45;color:#555;}
+  .dim{color:#818181;}
+  .hint{font-size:10.5px;line-height:1.5;color:#6b6b6b;}
+  .safety-note{border:1px solid #c2c2c2;background:#f5f5f5;padding:9px 10px;font-size:10px;line-height:1.5;color:#5d5d5d;}
+
+  /* ---------- 1 · browse ---------- */
+  .searchbar{display:flex;gap:8px;padding:12px 16px 8px;}
+  .searchbar .input{flex:1;}
+  .searchbar .btn{width:74px;flex:none;min-height:40px;padding:0 8px;font-size:11px;}
+  .filter-row{display:flex;gap:7px;padding:0 16px 10px;flex-wrap:nowrap;}
+  .filter-row .chip{font-size:10px;padding:6px 8px;}
+  .meta-row{
+    display:flex;align-items:center;justify-content:space-between;gap:8px;
+    padding:0 16px 10px;font-size:11px;color:#444;
+  }
+  .meta-row .badge{margin-left:3px;}
+  .sort{font-size:10px;color:#666;}
+  .results{display:flex;flex-direction:column;gap:10px;padding:0 16px;flex:1;min-height:0;}
+  .results .card{flex:1;min-height:118px;}
+  .card{
+    display:flex;gap:11px;border:1px solid #a3a3a3;background:#fff;
+    padding:10px;flex:none;
+  }
+  .card .card-ph{width:112px;height:auto;align-self:stretch;min-height:104px;}
+  .card-main{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;}
+  .card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;}
+  .card-title{font-size:13.5px;font-weight:700;line-height:1.25;}
+  .price{font-size:12.5px;font-weight:800;white-space:nowrap;}
+  .card-line{font-size:10.5px;color:#555;line-height:1.45;}
+  .card-note{display:flex;justify-content:space-between;gap:8px;margin-top:auto;font-size:9.5px;color:#7d7d7d;}
+  .infonote{
+    margin:10px 16px 0;border:1px solid #c2c2c2;background:#f5f5f5;
+    padding:8px 10px;font-size:10px;line-height:1.45;color:#5d5d5d;
+  }
+  .loadmore{padding:12px 16px 14px;}
+  .loadmore .btn{width:100%;}
+
+  /* ---------- 2 · listing ---------- */
+  .carousel{
+    height:220px;margin:12px 16px 0;border:1px solid #a8a8a8;position:relative;
+  }
+  .carousel .ph{width:100%;height:100%;border:none;}
+  .car-count{
+    position:absolute;right:8px;bottom:8px;background:#fff;border:1px solid #999;
+    font-size:9px;padding:3px 6px;letter-spacing:.04em;color:#555;
+  }
+  .car-nav{
+    position:absolute;top:50%;transform:translateY(-50%);
+    width:24px;height:34px;background:#f7f7f7;border:1px solid #999;
+    display:grid;place-items:center;font-size:15px;color:#444;
+  }
+  .car-nav.l{left:8px;} .car-nav.r{right:8px;}
+  .dots{display:flex;justify-content:center;gap:5px;padding:8px 0 4px;}
+  .dots i{width:5px;height:5px;border:1px solid #8c8c8c;border-radius:50%;display:block;background:#fff;}
+  .dots i.on{background:#333;border-color:#333;}
+  .listing-body{padding:6px 16px 0;}
+  .title-row{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;padding-bottom:10px;}
+  .h1{font-size:17px;font-weight:800;letter-spacing:-.01em;line-height:1.2;}
+  .details{border-top:1px solid #cfcfcf;}
+  .drow{
+    display:flex;align-items:center;justify-content:space-between;gap:10px;
+    padding:8px 0;border-bottom:1px solid #dcdcdc;font-size:11.5px;
+  }
+  .drow > span:first-child{color:#666;}
+  .drow > span:last-child{font-weight:600;text-align:right;}
+  .cond b{font-weight:800;border-bottom:2px solid #222;padding-bottom:1px;}
+  .cond span{color:#8b8b8b;margin:0 3px;}
+  .with-badge{display:flex;gap:7px;align-items:flex-start;}
+  .with-badge .badge{margin-top:-1px;}
+  .actionbar{flex:none;padding:12px 16px;border-top:1px solid #d7d7d7;display:flex;flex-direction:column;gap:8px;}
+
+  /* ---------- 3 · contact ---------- */
+  .seller-strip{
+    flex:none;display:flex;gap:10px;align-items:center;
+    padding:12px 16px;border-bottom:1px solid var(--line-soft);background:#fafafa;
+  }
+  .seller-strip .ph{width:46px;height:46px;font-size:9px;}
+  .contact-body{padding:16px;display:flex;flex-direction:column;gap:12px;}
+  .qchips{display:flex;flex-wrap:wrap;gap:7px;}
+  .qchips .chip{font-size:10.5px;padding:8px 10px;}
+  .textarea{
+    border:1px solid #9c9c9c;background:#fbfbfb;min-height:130px;
+    padding:10px 11px;font-size:12px;color:#8c8c8c;line-height:1.5;
+  }
+  .textarea.tall{min-height:140px;}
+  .counter{text-align:right;font-size:9px;color:#888;margin-top:-6px;}
+  .two-col{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  .sub-label{font-size:9.5px;letter-spacing:.06em;text-transform:uppercase;color:#666;margin-bottom:5px;}
+  .steps-inline{display:grid;grid-template-columns:repeat(3,1fr);border:1px solid #c6c6c6;background:#f6f6f6;}
+  .steps-inline div{padding:9px 7px;font-size:9.5px;line-height:1.35;color:#5b5b5b;border-right:1px solid #d3d3d3;}
+  .steps-inline div:last-child{border-right:none;}
+  .steps-inline b{display:block;font-size:9px;color:#333;margin-bottom:2px;}
+
+  /* ---------- 4 · collection ---------- */
+  .collection-body{padding:16px;display:flex;flex-direction:column;gap:12px;}
+  .summary-card{display:flex;gap:10px;align-items:center;border:1px solid #b8b8b8;padding:10px;background:#fafafa;}
+  .summary-card .ph{width:56px;height:56px;font-size:9px;}
+  .window-box{border:1px solid #a3a3a3;padding:10px;min-height:66px;}
+  .window-box .v{font-size:13px;font-weight:700;margin-top:4px;}
+  .cost{border:1px solid #a3a3a3;}
+  .cost-row{display:flex;justify-content:space-between;gap:8px;padding:9px 10px;font-size:11px;border-bottom:1px solid #d6d6d6;color:#555;}
+  .cost-row:last-child{border-bottom:none;}
+  .cost-row.total{background:#efefef;color:#111;font-weight:800;font-size:11.5px;}
+  .tracker{display:grid;grid-template-columns:repeat(4,1fr);position:relative;padding:2px 0 0;}
+  .tracker::before{content:"";position:absolute;top:8px;left:12%;right:12%;height:1px;background:#bdbdbd;}
+  .tstep{display:flex;flex-direction:column;align-items:center;gap:5px;position:relative;text-align:center;}
+  .tstep .dot{width:13px;height:13px;border-radius:50%;border:1px solid #8d8d8d;background:#fff;z-index:1;}
+  .tstep.done .dot{background:#8a8a8a;border-color:#8a8a8a;}
+  .tstep.current .dot{background:#111;border-color:#111;outline:2px solid #111;outline-offset:2px;}
+  .tstep .tl{font-size:9.5px;font-weight:700;line-height:1.25;color:#333;}
+  .tstep .td{font-size:8.5px;color:#8a8a8a;}
+  .tstep:not(.done):not(.current) .tl{color:#8a8a8a;font-weight:500;}
+  .checklist{border:1px solid #c6c6c6;background:#fafafa;padding:10px;}
+  .check-line{display:flex;gap:8px;align-items:flex-start;font-size:10.5px;line-height:1.4;color:#555;margin-top:6px;}
+  .check-line .box{width:13px;height:13px;border:1px solid #8a8a8a;background:#fff;flex:none;margin-top:1px;}
+
+  /* ---------- 5 · create listing ---------- */
+  .form-body{padding:14px 16px 16px;display:flex;flex-direction:column;gap:11px;}
+  .field{display:flex;flex-direction:column;gap:5px;}
+  .photo-row{display:flex;gap:8px;}
+  .photo-row .ph{width:76px;height:66px;font-size:9px;}
+  .upload{
+    width:76px;height:66px;border:1px dashed #8d8d8d;background:#f7f7f7;
+    display:grid;place-items:center;text-align:center;font-size:9.5px;color:#666;line-height:1.3;padding:6px;
+  }
+  .seg{display:flex;border:1px solid #9c9c9c;background:#fbfbfb;}
+  .seg span{flex:1;text-align:center;padding:9px 4px;font-size:11px;color:#777;border-right:1px solid #cfcfcf;}
+  .seg span:last-child{border-right:none;}
+  .seg span.on{background:#dedede;color:#111;font-weight:700;}
+  .field-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  .input.with-prefix{padding-left:0;gap:0;}
+  .input.with-prefix .prefix{border-right:1px solid #c6c6c6;padding:0 9px;font-size:10px;font-weight:700;color:#444;}
+  .input.with-prefix .val{padding-left:10px;}
+  .checkrow{display:flex;align-items:flex-start;gap:8px;border:1px solid #b4b4b4;background:#fafafa;padding:10px;font-size:11px;line-height:1.4;color:#333;}
+  .checkrow .box{width:16px;height:16px;border:1px solid #777;background:#fff;flex:none;margin-top:1px;}
+  .checkrow .badge{margin-left:auto;}
+
+  /* ---------- 6 · my listings ---------- */
+  .stats-strip{display:flex;justify-content:space-between;gap:8px;padding:10px 16px;border-bottom:1px solid #dcdcdc;font-size:10.5px;color:#555;background:#fafafa;}
+  .stats-strip b{color:#222;}
+  .tabs{display:flex;gap:0;border-bottom:1px solid #cfcfcf;padding:0 16px;}
+  .tabs span{padding:10px 10px;font-size:11px;color:#777;border-bottom:2px solid transparent;}
+  .tabs span.on{color:#111;font-weight:800;border-bottom-color:#111;}
+  .listing-list{padding:12px 16px;display:flex;flex-direction:column;gap:9px;}
+  .listing-row{display:flex;gap:10px;border:1px solid #b8b8b8;padding:12px 10px;align-items:center;}
+  .listing-row .ph{width:74px;height:74px;font-size:8.5px;}
+  .lr-main{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;}
+  .lr-side{display:flex;flex-direction:column;align-items:flex-end;gap:6px;}
+  .tag{
+    display:inline-block;border:1px solid #8f8f8f;background:#fff;color:#444;
+    font-size:8.5px;letter-spacing:.04em;text-transform:uppercase;font-weight:700;
+    padding:3px 5px;line-height:1.2;white-space:nowrap;
+  }
+  .tag.dark{background:#3a3a3a;color:#fff;border-color:#3a3a3a;}
+  .tag.fill{background:#e5e5e5;}
+  .tag.dash{border-style:dashed;color:#555;}
+
+  /* ---------- 7 · incoming requests ---------- */
+  .req-list{padding:12px 16px;display:flex;flex-direction:column;gap:12px;}
+  .req-card{border:1px solid #a8a8a8;padding:12px;display:flex;flex-direction:column;gap:8px;}
+  .req-listing{display:flex;gap:8px;align-items:center;}
+  .req-listing .ph{width:42px;height:42px;font-size:8px;}
+  .req-top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;}
+  .bubble{border-left:2px solid #999;background:#f5f5f5;padding:7px 9px;font-size:11.5px;line-height:1.4;color:#333;}
+  .proposed{border:1px dashed #a2a2a2;padding:7px 9px;font-size:10.5px;color:#444;display:flex;justify-content:space-between;gap:8px;}
+  .proposed b{font-size:11px;}
+  .req-actions{display:flex;flex-direction:column;gap:6px;}
+  .req-actions .btn{min-height:40px;font-size:11px;}
+
+  /* ---------- 8 · empty state ---------- */
+  .empty-wrap{padding:16px;display:flex;flex-direction:column;gap:12px;}
+  .empty-panel{border:1px dashed #969696;background:#fafafa;padding:18px 16px;text-align:center;}
+  .empty-panel .ph{height:198px;width:100%;margin-bottom:14px;background:#e3e3e3;border-color:#bcbcbc;}
+  .empty-title{font-size:15px;font-weight:800;margin-bottom:6px;}
+  .empty-text{font-size:11px;line-height:1.55;color:#5d5d5d;max-width:270px;margin:0 auto;}
+  .empty-actions{display:flex;flex-direction:column;gap:8px;}
+  .active-filters{display:flex;flex-direction:column;gap:6px;}
+  .active-filters .chip{width:100%;justify-content:space-between;font-size:10.5px;}
+
+  /* ---------- 9 · report form ---------- */
+  .report-body{padding:14px 16px 16px;display:flex;flex-direction:column;gap:11px;}
+  .sheet-title{font-size:17px;font-weight:800;letter-spacing:-.01em;}
+  .menu{border:1px solid #9c9c9c;border-top:none;background:#fff;}
+  .menu div{padding:9px 10px;font-size:11px;border-bottom:1px solid #dedede;display:flex;justify-content:space-between;gap:8px;color:#444;}
+  .menu div:last-child{border-bottom:none;}
+  .menu div.sel{background:#e9e9e9;font-weight:700;color:#111;}
+
+  /* ---------- annotations panel ---------- */
+  .panel{
+    border:1px solid #8f8f8f;background:#f5f5f5;padding:18px;
+    width:390px;display:flex;flex-direction:column;gap:12px;
+  }
+  .panel .pk{font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:#666;font-weight:800;border-bottom:1px solid #c6c6c6;padding-bottom:6px;}
+  .feat-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px;}
+  .feat-list li{display:flex;gap:9px;align-items:flex-start;}
+  .feat-list .badge{margin-top:1px;width:19px;height:19px;font-size:10px;}
+  .feat-list b{display:block;font-size:11px;line-height:1.35;color:#222;margin-bottom:1px;}
+  .feat-list p{margin:0;font-size:10px;line-height:1.45;color:#5e5e5e;}
+  .panel p.panel-p{margin:0;font-size:10px;line-height:1.55;color:#555;}
+  .keyrow{display:flex;align-items:center;gap:8px;font-size:10px;color:#555;}
+  .keyrow .sample-ph{width:34px;height:22px;background:#dedede;border:1px solid #b1b1b1;display:grid;place-items:center;font-size:7.5px;color:#6d6d6d;}
+  .keyrow .sample-val{font-size:9px;font-weight:700;border:1px solid #aaa;padding:2px 5px;color:#666;background:#fff;}
+  .keyrow .sample-arrow{font-size:13px;line-height:1;color:#444;}
+  .keyrow .sample-dash{width:34px;border-top:1px dashed #777;}
+  .panel .foot{margin-top:auto;font-size:9px;color:#7c7c7c;line-height:1.5;border-top:1px solid #ccc;padding-top:8px;}
+</style>
+</head>
+<body>
+<div class="toolbar">
+  <span class="t">JengaConnect · wireframe prototype</span>
+  <span class="sub">390 × 844 · low fidelity · buyer + seller flow</span>
+  <div class="zoom">
+    <span class="zlabel">Zoom</span>
+    <button data-zoom="fit" class="on">Fit</button>
+    <button data-zoom="1">100%</button>
+    <button data-zoom="0.75">75%</button>
+    <button data-zoom="0.5">50%</button>
+  </div>
+</div>
+
+<div class="viewport" id="viewport">
+  <div class="scaler" id="scaler">
+    <div class="stage" id="stage">
+
+      <div class="canvas-head">
+        <div>
+          <div class="kicker">Prototype · low-fidelity wireframes · mobile web · 390 × 844</div>
+          <h1>JengaConnect — inspect-first marketplace for surplus building materials</h1>
+          <div class="sub">
+            Kampala &amp; Wakiso · buyers find small quantities nearby, inspect them, then collect.<br />
+            Buyer flow 1–4 &nbsp;·&nbsp; seller flow 5–7 &nbsp;·&nbsp; supporting states A–B &nbsp;·&nbsp; solid arrows = primary route, dashed = handoff or branch.
+          </div>
+        </div>
+        <div class="note">
+          <b>How to read this canvas</b><br />
+          Grey boxes labelled “photo” are image placeholders.<br />
+          “___” means a value that is not defined in this prototype.<br />
+          Numbered circles 1–5 mark the key features.<br />
+          Screens are ordered left to right in user-flow order.
+        </div>
+      </div>
+
+      <div class="grid" id="grid">
+
+        <!-- ================= BUYER 1 · BROWSE ================= -->
+        <div class="cell">
+          <div class="cell-label"><span class="no">Buyer 1</span> Browse <span class="desc">search + filter</span></div>
+          <div class="frame" id="scr-browse">
+            <div class="app-head">
+              <div>
+                <div class="wordmark">JengaConnect</div>
+                <div class="micro">Kampala &amp; Wakiso · surplus materials</div>
+              </div>
+              <div class="avatar">acct</div>
+            </div>
+
+            <div class="body">
+              <div class="searchbar">
+                <div class="input">Material (e.g. bricks, cement)</div>
+                <div class="btn">Search</div>
+              </div>
+
+              <div class="filter-row">
+                <div class="chip">Quantity: any <span class="caret">▾</span></div>
+                <div class="chip">Area: all <span class="caret">▾</span></div>
+                <div class="chip">Collection: pick-up <span class="caret">▾</span></div>
+              </div>
+
+              <div class="meta-row">
+                <span><b>3</b> listings nearby <span class="badge">1</span></span>
+                <span class="sort">Sort: nearest <span class="caret">▾</span></span>
+              </div>
+
+              <div class="results">
+                <div class="card">
+                  <div class="ph card-ph">photo</div>
+                  <div class="card-main">
+                    <div class="card-top"><span class="card-title">Material ___</span><span class="price">UGX ___</span></div>
+                    <div class="card-line">___ units · Condition: used</div>
+                    <div class="card-line">Area: ___ (general)</div>
+                    <div class="card-line">Collection: pick-up</div>
+                    <div class="card-note"><span>Inspect before paying</span><span>Listed ___</span></div>
+                  </div>
+                </div>
+
+                <div class="card">
+                  <div class="ph card-ph">photo</div>
+                  <div class="card-main">
+                    <div class="card-top"><span class="card-title">Material ___</span><span class="price">UGX ___</span></div>
+                    <div class="card-line">___ units · Condition: new</div>
+                    <div class="card-line">Area: ___ (general)</div>
+                    <div class="card-line">Collection: pick-up</div>
+                    <div class="card-note"><span>Inspect before paying</span><span>Listed ___</span></div>
+                  </div>
+                </div>
+
+                <div class="card">
+                  <div class="ph card-ph">photo</div>
+                  <div class="card-main">
+                    <div class="card-top"><span class="card-title">Material ___</span><span class="price">UGX ___</span></div>
+                    <div class="card-line">___ units · Condition: used</div>
+                    <div class="card-line">Area: ___ (general)</div>
+                    <div class="card-line">Collection: pick-up</div>
+                    <div class="card-note"><span>Inspect before paying</span><span>Listed ___</span></div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="infonote">Only the general area is shown in results. The exact site address is shared after the seller confirms.</div>
+              <div class="loadmore"><div class="btn ghost small">Load more listings</div></div>
+            </div>
+
+            <div class="nav" data-active="browse"></div>
+          </div>
+        </div>
+
+        <!-- ================= BUYER 2 · LISTING ================= -->
+        <div class="cell">
+          <div class="cell-label"><span class="no">Buyer 2</span> Listing detail <span class="desc">inspect-first</span></div>
+          <div class="frame" id="scr-listing">
+            <div class="topline">
+              <span class="back">‹ Results</span>
+              <span class="micro">listing</span>
+              <span class="link">share</span>
+            </div>
+
+            <div class="body">
+              <div class="carousel">
+                <div class="ph">photo</div>
+                <div class="car-nav l">‹</div>
+                <div class="car-nav r">›</div>
+                <div class="car-count">photo 1 / 3</div>
+              </div>
+              <div class="dots"><i class="on"></i><i></i><i></i></div>
+
+              <div class="listing-body">
+                <div class="title-row">
+                  <div>
+                    <div class="h1">Material ___</div>
+                    <div class="micro" style="margin-top:4px;">Area: ___ · Wakiso &nbsp;·&nbsp; listed ___</div>
+                  </div>
+                  <div class="price">UGX ___</div>
+                </div>
+
+                <div class="details">
+                  <div class="drow"><span>Material</span><span>___</span></div>
+                  <div class="drow"><span>Quantity and unit</span><span>___ units</span></div>
+                  <div class="drow"><span>Condition</span><span class="cond"><span>New</span>/<b>Used</b>/<span>Damaged</span></span></div>
+                  <div class="drow"><span>General area</span><span>___ , Wakiso</span></div>
+                  <div class="drow"><span>Asking price</span><span>UGX ___</span></div>
+                  <div class="drow"><span>Seller permission stated</span><span>Yes</span></div>
+                </div>
+
+                <div class="infonote with-badge" style="margin:10px 0 0;">
+                  <span class="badge">2</span>
+                  <span><b>Exact site address is not shown.</b><br />Ask a quick question, inspect in person, then agree collection.</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="actionbar">
+              <div class="btn primary">Ask the seller</div>
+              <div class="btn ghost">Report listing</div>
+            </div>
+
+            <div class="nav" data-active="browse"></div>
+          </div>
+        </div>
+        <!-- ================= BUYER 3 · CONTACT ================= -->
+        <div class="cell">
+          <div class="cell-label"><span class="no">Buyer 3</span> Contact <span class="desc">ask + propose inspection</span></div>
+          <div class="frame" id="scr-contact">
+            <div class="topline">
+              <span class="back">‹ Listing</span>
+              <span class="micro">ask the seller</span>
+              <span class="link">help</span>
+            </div>
+
+            <div class="seller-strip">
+              <div class="ph">photo</div>
+              <div>
+                <div class="card-title">Material ___</div>
+                <div class="meta">___ units · Area: ___ (general)</div>
+              </div>
+            </div>
+
+            <div class="body contact-body">
+              <div class="section-label">Quick questions <span class="badge">3</span></div>
+              <div class="qchips">
+                <div class="chip">Still available?</div>
+                <div class="chip">Can I inspect first?</div>
+                <div class="chip">Part quantity?</div>
+                <div class="chip">Collection cost?</div>
+              </div>
+
+              <div>
+                <div class="section-label" style="margin-bottom:6px;">Message</div>
+                <div class="textarea">Type your question…</div>
+                <div class="counter">___ / 300</div>
+              </div>
+
+              <div>
+                <div class="section-label" style="margin-bottom:6px;">Proposed inspection</div>
+                <div class="two-col">
+                  <div>
+                    <div class="sub-label">Date</div>
+                    <div class="input">Select date <span class="caret">▾</span></div>
+                  </div>
+                  <div>
+                    <div class="sub-label">Time</div>
+                    <div class="input">Select time <span class="caret">▾</span></div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="steps-inline">
+                <div><b>Next 1</b>Seller replies</div>
+                <div><b>Next 2</b>You inspect</div>
+                <div><b>Next 3</b>Agree &amp; collect</div>
+              </div>
+
+              <div class="safety-note">Keep messages in the app. Do not send a deposit before you inspect the material.</div>
+              <div class="hint">An inspection is confirmed only when the seller accepts.</div>
+            </div>
+
+            <div class="actionbar">
+              <div class="btn primary">Send request</div>
+            </div>
+
+            <div class="nav" data-active="browse"></div>
+          </div>
+        </div>
+
+        <!-- ================= BUYER 4 · COLLECTION ================= -->
+        <div class="cell">
+          <div class="cell-label"><span class="no">Buyer 4</span> Collection <span class="desc">agree + complete</span></div>
+          <div class="frame" id="scr-collection">
+            <div class="topline">
+              <span class="back">‹ Requests</span>
+              <span class="micro">collection</span>
+              <span class="link">help</span>
+            </div>
+
+            <div class="body collection-body">
+              <div class="summary-card">
+                <div class="ph">photo</div>
+                <div>
+                  <div class="card-title">Material ___</div>
+                  <div class="meta">Agreed quantity: ___ units</div>
+                </div>
+              </div>
+
+              <div>
+                <div class="section-label" style="margin-bottom:6px;">Collection window</div>
+                <div class="two-col">
+                  <div class="window-box"><div class="sub-label">Day</div><div class="v">___ (day)</div></div>
+                  <div class="window-box"><div class="sub-label">Time</div><div class="v">___ – ___</div></div>
+                </div>
+              </div>
+
+              <div>
+                <div class="section-label" style="margin-bottom:6px;">Cost</div>
+                <div class="cost">
+                  <div class="cost-row"><span>Agreed price</span><span>UGX ___</span></div>
+                  <div class="cost-row"><span>Transport (estimate)</span><span>UGX ___</span></div>
+                  <div class="cost-row total"><span>Total</span><span>UGX ___ + transport</span></div>
+                </div>
+              </div>
+
+              <div>
+                <div class="section-label" style="margin-bottom:8px;">Collection status <span class="badge">4</span></div>
+                <div class="tracker">
+                  <div class="tstep done"><span class="dot"></span><span class="tl">Contacted</span><span class="td">___</span></div>
+                  <div class="tstep done"><span class="dot"></span><span class="tl">Inspected</span><span class="td">___</span></div>
+                  <div class="tstep current"><span class="dot"></span><span class="tl">Agreed</span><span class="td">___</span></div>
+                  <div class="tstep"><span class="dot"></span><span class="tl">Collected</span><span class="td">___</span></div>
+                </div>
+                <div class="hint" style="margin-top:8px;">Mark complete only after you have collected and checked the material.</div>
+              </div>
+
+              <div class="checklist">
+                <div class="section-label">Before you collect</div>
+                <div class="check-line"><span class="box"></span>Confirm the exact address with the seller</div>
+                <div class="check-line"><span class="box"></span>Check the agreed quantity on arrival</div>
+                <div class="check-line"><span class="box"></span>Inspect the material before paying</div>
+                <div class="check-line"><span class="box"></span>Arrange transport for ___ units</div>
+              </div>
+            </div>
+
+            <div class="actionbar">
+              <div class="btn primary">Mark complete</div>
+              <div class="link" style="text-align:center;">Problem? Report to moderators</div>
+            </div>
+
+            <div class="nav" data-active="requests"></div>
+          </div>
+        </div>
+
+        <!-- ================= ANNOTATIONS ================= -->
+        <div class="cell">
+          <div class="cell-label"><span class="no">Key</span> Annotations <span class="desc">features + reading order</span></div>
+          <div class="panel">
+            <div class="pk">Key features · 1–5</div>
+            <ol class="feat-list">
+              <li><span class="badge">1</span><div><b>Scan-first result cards</b><p>Photo, material, quantity, condition, broad area and price, so buyers can shortlist without opening every listing.</p></div></li>
+              <li><span class="badge">2</span><div><b>Inspect-first listing detail</b><p>Condition, quantity, unit, asking price, seller permission and a clear statement that the exact address stays hidden.</p></div></li>
+              <li><span class="badge">3</span><div><b>Quick questions + inspection slot</b><p>One-tap questions lower the effort of contacting a seller; date and time turn chat into a real inspection plan.</p></div></li>
+              <li><span class="badge">4</span><div><b>Collection agreement tracker</b><p>Agreed quantity, collection window, price plus transport, and a visible path from Contacted to Collected.</p></div></li>
+              <li><span class="badge">5</span><div><b>Seller permission check</b><p>The seller confirms they may sell the material and submits for review before the listing can be published.</p></div></li>
+            </ol>
+
+            <div class="pk" style="margin-top:2px;">Intended user flow</div>
+            <p class="panel-p"><b>Buyer:</b> Browse → Listing detail → Contact → Collection. A request sent from Contact appears in the seller’s Incoming requests; an accepted request returns the buyer to Collection.</p>
+            <p class="panel-p"><b>Seller:</b> Create listing → My listings (review + status) → Incoming requests (accept or suggest another time).</p>
+            <p class="panel-p"><b>Exceptions:</b> no results leads to State A; a suspicious listing leads to State B, the moderator report form.</p>
+
+            <div class="pk" style="margin-top:2px;">Wireframe key</div>
+            <div class="keyrow"><span class="sample-ph">photo</span><span>image placeholder</span></div>
+            <div class="keyrow"><span class="sample-val">___</span><span>value not yet defined</span></div>
+            <div class="keyrow"><span class="sample-arrow">→</span><span>solid = primary flow</span></div>
+            <div class="keyrow"><span class="sample-dash"></span><span>dashed = handoff / branch</span></div>
+
+            <div class="foot">Low-fidelity concept only. No brand colours, imagery or real prices. Names, quantities, dates and prices are intentionally placeholders.</div>
+          </div>
+        </div>
+        <!-- ================= STATE A · EMPTY RESULTS ================= -->
+        <div class="cell">
+          <div class="cell-label"><span class="no">State A</span> Empty results <span class="desc">no matches nearby</span></div>
+          <div class="frame" id="scr-empty">
+            <div class="app-head">
+              <div>
+                <div class="wordmark">JengaConnect</div>
+                <div class="micro">Kampala &amp; Wakiso · surplus materials</div>
+              </div>
+              <div class="avatar">acct</div>
+            </div>
+
+            <div class="body">
+              <div class="searchbar">
+                <div class="input solid">Material ___</div>
+                <div class="btn">Search</div>
+              </div>
+
+              <div class="filter-row">
+                <div class="chip on">Quantity: ___ <span class="caret">×</span></div>
+                <div class="chip on">Area: ___ <span class="caret">×</span></div>
+                <div class="chip">Pick-up <span class="caret">▾</span></div>
+              </div>
+
+              <div class="empty-wrap">
+                <div class="empty-panel">
+                  <div class="ph">no photo</div>
+                  <div class="empty-title">No matching listings nearby</div>
+                  <div class="empty-text">Nothing matches this quantity in the selected area right now. Try a wider area, a smaller quantity or check back later.</div>
+                </div>
+
+                <div class="empty-actions">
+                  <div class="btn">Clear filters</div>
+                  <div class="btn ghost">Change area</div>
+                </div>
+                <div class="link" style="text-align:center;">Save this search</div>
+
+                <div class="active-filters">
+                  <div class="section-label" style="margin-bottom:2px;">Search tips</div>
+                  <div class="hint">Search by material first, then narrow by quantity. Nearby sellers add usable surplus regularly.</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="nav" data-active="browse"></div>
+          </div>
+        </div>
+
+        <!-- ================= STATE B · REPORT LISTING ================= -->
+        <div class="cell">
+          <div class="cell-label"><span class="no">State B</span> Report listing <span class="desc">moderator form</span></div>
+          <div class="frame" id="scr-report">
+            <div class="topline">
+              <span class="back">Cancel</span>
+              <span class="micro">report</span>
+              <span class="link">rules</span>
+            </div>
+
+            <div class="body report-body">
+              <div class="sheet-title">Report listing</div>
+
+              <div class="summary-card">
+                <div class="ph">photo</div>
+                <div>
+                  <div class="card-title">Material ___</div>
+                  <div class="meta">___ units · Area: ___ (general)</div>
+                </div>
+              </div>
+
+              <div>
+                <div class="section-label" style="margin-bottom:6px;">Reason</div>
+                <div class="input solid">Select a reason <span class="caret">▾</span></div>
+                <div class="menu">
+                  <div>Wrong material or quantity</div>
+                  <div>Already sold / not available</div>
+                  <div>Unsafe or misleading listing</div>
+                  <div>Price or permission problem</div>
+                  <div>Other</div>
+                </div>
+                <div class="hint" style="margin-top:5px;">Dropdown shown open for clarity.</div>
+              </div>
+
+              <div>
+                <div class="section-label" style="margin-bottom:6px;">Details</div>
+                <div class="textarea tall">Tell moderators what happened…</div>
+                <div class="counter">___ / 500</div>
+              </div>
+
+              <div class="hint">Reports are private. The seller is not told who reported the listing.</div>
+              <div class="safety-note">What happens next: moderators review the report. You may be asked for more detail.</div>
+            </div>
+
+            <div class="actionbar">
+              <div class="btn primary">Submit report</div>
+              <div class="btn ghost">Cancel</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ================= SELLER 5 · CREATE LISTING ================= -->
+        <div class="cell">
+          <div class="cell-label"><span class="no">Seller 5</span> Create listing <span class="desc">permission + review</span></div>
+          <div class="frame" id="scr-create">
+            <div class="app-head">
+              <div>
+                <div class="wordmark">Post material</div>
+                <div class="micro">sell usable surplus · Kampala &amp; Wakiso</div>
+              </div>
+              <div class="link">Cancel</div>
+            </div>
+
+            <div class="body form-body">
+              <div class="field">
+                <div class="sub-label">Material</div>
+                <div class="input">Material</div>
+              </div>
+
+              <div class="field">
+                <div class="sub-label">Photos <span style="color:#8a8a8a;text-transform:none;letter-spacing:0;">· ___ / 5</span></div>
+                <div class="photo-row">
+                  <div class="ph">photo</div>
+                  <div class="ph">photo</div>
+                  <div class="upload">+ add photos</div>
+                </div>
+              </div>
+
+              <div class="field">
+                <div class="sub-label">Condition</div>
+                <div class="seg"><span class="on">New</span><span>Used</span><span>Damaged</span></div>
+              </div>
+
+              <div class="field-row">
+                <div class="field">
+                  <div class="sub-label">Unit</div>
+                  <div class="input">Select <span class="caret">▾</span></div>
+                </div>
+                <div class="field">
+                  <div class="sub-label">Quantity</div>
+                  <div class="input">___ units</div>
+                </div>
+              </div>
+
+              <div class="field">
+                <div class="sub-label">Asking price</div>
+                <div class="input with-prefix"><span class="prefix">UGX</span><span class="val">___</span></div>
+              </div>
+
+              <div class="field">
+                <div class="sub-label">General area</div>
+                <div class="input">Select broad area <span class="caret">▾</span></div>
+                <div class="hint">Broad area only. The exact address stays private until you accept a request.</div>
+              </div>
+
+              <div class="checkrow">
+                <span class="box"></span>
+                <span><b>I have permission to sell this material</b><br /><span style="color:#666;">I am the owner, or I have the owner’s permission.</span></span>
+                <span class="badge">5</span>
+              </div>
+            </div>
+
+            <div class="actionbar">
+              <div class="btn primary">Submit for review</div>
+              <div class="hint" style="text-align:center;">Reviewed before it is published.</div>
+            </div>
+
+            <div class="nav" data-active="post"></div>
+          </div>
+        </div>
+        <!-- ================= SELLER 6 · MY LISTINGS ================= -->
+        <div class="cell">
+          <div class="cell-label"><span class="no">Seller 6</span> My listings <span class="desc">status + edit</span></div>
+          <div class="frame" id="scr-mylistings">
+            <div class="app-head">
+              <div>
+                <div class="wordmark">My listings</div>
+                <div class="micro">manage what buyers can see</div>
+              </div>
+              <div class="btn tiny">Post</div>
+            </div>
+
+            <div class="stats-strip"><span><b>4</b> listings</span><span><b>___</b> requests</span><span><b>___</b> views</span></div>
+
+            <div class="tabs"><span class="on">All</span><span>Published</span><span>Reserved</span><span>Collected</span></div>
+
+            <div class="body">
+              <div class="listing-list">
+                <div class="listing-row">
+                  <div class="ph">photo</div>
+                  <div class="lr-main">
+                    <div class="card-title">Material ___</div>
+                    <div class="card-line">___ units · UGX ___</div>
+                    <div class="card-line dim">Edited ___</div>
+                  </div>
+                  <div class="lr-side">
+                    <span class="tag dash">Pending review</span>
+                    <div class="btn tiny ghost">Edit</div>
+                  </div>
+                </div>
+
+                <div class="listing-row">
+                  <div class="ph">photo</div>
+                  <div class="lr-main">
+                    <div class="card-title">Material ___</div>
+                    <div class="card-line">___ units · UGX ___</div>
+                    <div class="card-line dim">Published ___</div>
+                  </div>
+                  <div class="lr-side">
+                    <span class="tag fill">Published</span>
+                    <div class="btn tiny ghost">Edit</div>
+                  </div>
+                </div>
+
+                <div class="listing-row">
+                  <div class="ph">photo</div>
+                  <div class="lr-main">
+                    <div class="card-title">Material ___</div>
+                    <div class="card-line">___ units · UGX ___</div>
+                    <div class="card-line dim">Reserved for ___, ___</div>
+                  </div>
+                  <div class="lr-side">
+                    <span class="tag dark">Reserved</span>
+                    <div class="btn tiny ghost">Edit</div>
+                  </div>
+                </div>
+
+                <div class="listing-row">
+                  <div class="ph">photo</div>
+                  <div class="lr-main">
+                    <div class="card-title">Material ___</div>
+                    <div class="card-line">___ units · UGX ___</div>
+                    <div class="card-line dim">Collected ___</div>
+                  </div>
+                  <div class="lr-side">
+                    <span class="tag">Collected</span>
+                    <div class="btn tiny ghost">Edit</div>
+                  </div>
+                </div>
+
+                <div class="listing-row">
+                  <div class="ph">photo</div>
+                  <div class="lr-main">
+                    <div class="card-title">Material ___</div>
+                    <div class="card-line">___ units · UGX ___</div>
+                    <div class="card-line dim">Published ___</div>
+                  </div>
+                  <div class="lr-side">
+                    <span class="tag fill">Published</span>
+                    <div class="btn tiny ghost">Edit</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="infonote" style="margin-top:0;">
+                Status changes automatically as requests are accepted and the buyer marks collection complete.
+              </div>
+            </div>
+
+            <div class="nav" data-active="account"></div>
+          </div>
+        </div>
+
+        <!-- ================= SELLER 7 · INCOMING REQUESTS ================= -->
+        <div class="cell">
+          <div class="cell-label"><span class="no">Seller 7</span> Incoming requests <span class="desc">accept / reschedule</span></div>
+          <div class="frame" id="scr-requests">
+            <div class="app-head">
+              <div>
+                <div class="wordmark">Incoming requests</div>
+                <div class="micro">buyer questions about your material</div>
+              </div>
+              <span class="tag dark">2 new</span>
+            </div>
+            <div class="stats-strip"><span><b>2</b> new requests</span><span><b>___</b> accepted</span><span><b>___</b> rescheduled</span></div>
+
+            <div class="body">
+              <div class="req-list">
+                <div class="req-card">
+                  <div class="req-top">
+                    <div class="card-title">Buyer ___</div>
+                    <span class="tag dash">New</span>
+                  </div>
+                  <div class="req-listing">
+                    <div class="ph">photo</div>
+                    <div>
+                      <div class="meta">Material ___ · ___ units</div>
+                      <div class="meta dim">Area: ___ (general)</div>
+                    </div>
+                  </div>
+                  <div class="bubble">“Can I inspect first?”</div>
+                  <div class="proposed"><span>Proposed inspection</span><b>___ (day), ___:___</b></div>
+                  <div class="req-actions">
+                    <div class="btn primary">Accept</div>
+                    <div class="btn ghost">Suggest another time</div>
+                  </div>
+                </div>
+
+                <div class="req-card">
+                  <div class="req-top">
+                    <div class="card-title">Buyer ___</div>
+                    <span class="tag dash">New</span>
+                  </div>
+                  <div class="req-listing">
+                    <div class="ph">photo</div>
+                    <div>
+                      <div class="meta">Material ___ · ___ units</div>
+                      <div class="meta dim">Area: ___ (general)</div>
+                    </div>
+                  </div>
+                  <div class="bubble">“Still available? Can I take part quantity?”</div>
+                  <div class="proposed"><span>Proposed inspection</span><b>___ (day), ___:___</b></div>
+                  <div class="req-actions">
+                    <div class="btn primary">Accept</div>
+                    <div class="btn ghost">Suggest another time</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="infonote" style="margin:0 16px 12px;">Accepting confirms the inspection time and shares the collection window with the buyer.</div>
+
+            <div class="nav" data-active="requests"></div>
+          </div>
+        </div>
+
+      </div><!-- /grid -->
+
+      <svg id="arrows" aria-hidden="true"></svg>
+
+    </div><!-- /stage -->
+  </div><!-- /scaler -->
+</div><!-- /viewport -->
+<script>
+(function () {
+  /* ---------------- bottom navigation ---------------- */
+  var TABS = [["browse", "Browse"], ["post", "Post"], ["requests", "Requests"], ["account", "Account"]];
+  document.querySelectorAll(".nav").forEach(function (nav) {
+    var active = nav.getAttribute("data-active") || "browse";
+    nav.innerHTML = TABS.map(function (t) {
+      return '<div class="tab ' + (t[0] === active ? "on" : "") + '"><span class="glyph"></span><span>' + t[1] + '</span></div>';
+    }).join("");
+  });
+
+  /* ---------------- stage + arrows ---------------- */
+  var stage = document.getElementById("stage");
+  var grid = document.getElementById("grid");
+  var scaler = document.getElementById("scaler");
+  var viewport = document.getElementById("viewport");
+  var svg = document.getElementById("arrows");
+  var STAGE_W = 2334;
+  var stageH = 0;
+  var zoom = 1;
+  var mode = "fit";
+
+  function rect(id) {
+    var node = document.getElementById(id);
+    var a = node.getBoundingClientRect();
+    var s = stage.getBoundingClientRect();
+    return { x: a.left - s.left, y: a.top - s.top, w: a.width, h: a.height };
+  }
+
+  function el(tag, attrs) {
+    var parts = [];
+    for (var k in attrs) parts.push(k + '="' + attrs[k] + '"');
+    return "<" + tag + " " + parts.join(" ") + " />";
+  }
+
+  function label(x, y, text, cls, anchor) {
+    return '<text class="alabel ' + (cls || "") + '" x="' + x + '" y="' + y + '" text-anchor="' + (anchor || "middle") + '">' + text + "</text>";
+  }
+
+  function hArrow(from, to, text) {
+    var y = from.y + from.h / 2;
+    var x1 = from.x + from.w + 12;
+    var x2 = to.x - 9;
+    return el("line", {
+      x1: x1, y1: y, x2: x2, y2: y,
+      stroke: "#2b2b2b", "stroke-width": "1.4", "marker-end": "url(#head-strong)"
+    }) + label((x1 + x2) / 2, y - 9, text);
+  }
+
+  function vArrow(from, to, text, dashed) {
+    var x = from.x + from.w / 2;
+    var y1 = from.y + from.h + 14;
+    var y2 = to.y - 10;
+    return el("line", {
+      x1: x, y1: y1, x2: x, y2: y2,
+      stroke: dashed ? "#6f6f6f" : "#2b2b2b",
+      "stroke-width": "1.4",
+      "stroke-dasharray": dashed ? "4 5" : "",
+      "marker-end": dashed ? "url(#head-soft)" : "url(#head-strong)"
+    }) + label(x + 10, (y1 + y2) / 2 + 3, text, dashed ? "soft" : "", "start");
+  }
+
+  function poly(points, text, tx, ty) {
+    return el("polyline", {
+      points: points.map(function (p) { return p[0] + "," + p[1]; }).join(" "),
+      fill: "none", stroke: "#6f6f6f", "stroke-width": "1.4",
+      "stroke-dasharray": "4 5", "marker-end": "url(#head-soft)"
+    }) + label(tx, ty, text, "soft");
+  }
+
+  function drawArrows() {
+    stage.style.transform = "none";
+    stageH = Math.ceil(stage.getBoundingClientRect().height);
+    svg.setAttribute("width", STAGE_W);
+    svg.setAttribute("height", stageH);
+
+    var defs =
+      '<defs>' +
+      '<marker id="head-strong" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#2b2b2b"/></marker>' +
+      '<marker id="head-soft" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#6f6f6f"/></marker>' +
+      '</defs>';
+
+    var browse = rect("scr-browse");
+    var listing = rect("scr-listing");
+    var contact = rect("scr-contact");
+    var collection = rect("scr-collection");
+    var empty = rect("scr-empty");
+    var report = rect("scr-report");
+    var create = rect("scr-create");
+    var my = rect("scr-mylistings");
+    var requests = rect("scr-requests");
+
+    var out = defs;
+    out += hArrow(browse, listing, "open listing");
+    out += hArrow(listing, contact, "ask seller");
+    out += hArrow(contact, collection, "plan agreed");
+    out += hArrow(create, my, "after review");
+    out += hArrow(my, requests, "new enquiry");
+
+    out += vArrow(browse, empty, "no results", true);
+    out += vArrow(listing, report, "report", true);
+
+    /* buyer request → seller inbox */
+    var cB = contact.y + contact.h;
+    var x1 = contact.x + contact.w - 62;
+    var lane1 = cB + 46;
+    var gapC5 = requests.x - 48;
+    var entry = requests.y + 70;
+    out += poly(
+      [[x1, cB], [x1, lane1], [gapC5, lane1], [gapC5, entry], [requests.x - 3, entry]],
+      "request → seller", (x1 + gapC5) / 2, lane1 - 8
+    );
+
+    /* accepted → buyer collects */
+    var lane2 = cB + 94;
+    var startY = requests.y + 132;
+    var x3 = collection.x + collection.w - 62;
+    out += poly(
+      [[requests.x - 3, startY], [gapC5, startY], [gapC5, lane2], [x3, lane2], [x3, cB + 2]],
+      "accept → collection", (gapC5 + x3) / 2, lane2 + 14
+    );
+
+    svg.innerHTML = out;
+  }
+
+  function applyZoom(z, m) {
+    zoom = z;
+    if (m) mode = m;
+    stage.style.transform = "scale(" + z + ")";
+    scaler.style.width = (STAGE_W * z) + "px";
+    scaler.style.height = (stageH * z) + "px";
+    document.querySelectorAll(".zoom button").forEach(function (b) {
+      b.classList.toggle("on", b.getAttribute("data-zoom") === (mode === "fit" ? "fit" : String(z)));
+    });
+  }
+
+  function fit() {
+    var avail = viewport.clientWidth - 112;
+    var z = Math.min(1, Math.max(0.25, avail / STAGE_W));
+    applyZoom(z, "fit");
+  }
+
+  function boot() {
+    drawArrows();
+    fit();
+  }
+
+  document.querySelectorAll(".zoom button").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      var v = btn.getAttribute("data-zoom");
+      if (v === "fit") fit();
+      else applyZoom(parseFloat(v), "fixed");
+    });
+  });
+
+  window.addEventListener("resize", function () {
+    if (mode === "fit") fit();
+  });
+
+  requestAnimationFrame(boot);
+  window.addEventListener("load", function () { drawArrows(); fit(); });
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(function () { drawArrows(); if (mode === "fit") fit(); });
+  }
+})();
+</script>
+</body>
+</html>
